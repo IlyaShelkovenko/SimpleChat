@@ -13,7 +13,7 @@ data class YandexMessageDto(
 data class YandexCompletionOptions(
     val stream: Boolean = false,
     val temperature: Double = 0.7,
-    val maxTokens: String? = null
+    val maxTokens: Int? = null
 )
 
 @Serializable
