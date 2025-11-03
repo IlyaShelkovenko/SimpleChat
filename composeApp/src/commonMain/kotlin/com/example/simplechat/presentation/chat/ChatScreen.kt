@@ -154,11 +154,13 @@ fun ChatScreen(
                         placeholder = { Text("Type your message") },
                         enabled = !state.isLoading,
                         shape = RoundedCornerShape(20.dp),
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
-                            disabledBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
-                            containerColor = MaterialTheme.colorScheme.surface
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+                            unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
+                            disabledIndicatorColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
+                            focusedContainerColor = MaterialTheme.colorScheme.surface,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                            disabledContainerColor = MaterialTheme.colorScheme.surface
                         )
                     )
                     Row(
