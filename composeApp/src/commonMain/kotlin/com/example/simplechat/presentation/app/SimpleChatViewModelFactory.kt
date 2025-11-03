@@ -9,13 +9,13 @@ import com.example.simplechat.presentation.chat.ChatViewModel
 object SimpleChatViewModelFactory {
     fun appViewModelFactory() = viewModelFactory {
         initializer {
-            AppViewModel(AppGraph.observeApiKeyUseCase)
+            AppViewModel(AppGraph.observeYandexCredentialsUseCase)
         }
     }
 
     fun apiKeyViewModelFactory() = viewModelFactory {
         initializer {
-            ApiKeyViewModel(AppGraph.saveApiKeyUseCase)
+            ApiKeyViewModel(AppGraph.saveYandexCredentialsUseCase)
         }
     }
 

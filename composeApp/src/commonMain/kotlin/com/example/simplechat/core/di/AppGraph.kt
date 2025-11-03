@@ -8,9 +8,9 @@ import com.example.simplechat.data.repository.ChatRepositoryImpl
 import com.example.simplechat.data.repository.SettingsRepositoryImpl
 import com.example.simplechat.domain.repository.ChatRepository
 import com.example.simplechat.domain.repository.SettingsRepository
-import com.example.simplechat.domain.usecase.GetApiKeyUseCase
-import com.example.simplechat.domain.usecase.ObserveApiKeyUseCase
-import com.example.simplechat.domain.usecase.SaveApiKeyUseCase
+import com.example.simplechat.domain.usecase.GetYandexCredentialsUseCase
+import com.example.simplechat.domain.usecase.ObserveYandexCredentialsUseCase
+import com.example.simplechat.domain.usecase.SaveYandexCredentialsUseCase
 import com.example.simplechat.domain.usecase.SendPromptUseCase
 
 object AppGraph {
@@ -26,9 +26,9 @@ object AppGraph {
         )
     }
 
-    val getApiKeyUseCase: GetApiKeyUseCase by lazy { GetApiKeyUseCase(settingsRepository) }
-    val saveApiKeyUseCase: SaveApiKeyUseCase by lazy { SaveApiKeyUseCase(settingsRepository) }
-    val observeApiKeyUseCase: ObserveApiKeyUseCase by lazy { ObserveApiKeyUseCase(settingsRepository) }
+    val getYandexCredentialsUseCase: GetYandexCredentialsUseCase by lazy { GetYandexCredentialsUseCase(settingsRepository) }
+    val saveYandexCredentialsUseCase: SaveYandexCredentialsUseCase by lazy { SaveYandexCredentialsUseCase(settingsRepository) }
+    val observeYandexCredentialsUseCase: ObserveYandexCredentialsUseCase by lazy { ObserveYandexCredentialsUseCase(settingsRepository) }
     val sendPromptUseCase: SendPromptUseCase by lazy { SendPromptUseCase(chatRepository, settingsRepository) }
 
     fun initialize(platformConfiguration: PlatformConfiguration) {
