@@ -11,6 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
@@ -20,15 +22,25 @@ fun ChatMessageBubble(
     isUser: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val bubbleColor = if (isUser) {
-        MaterialTheme.colorScheme.primaryContainer
+    val bubbleBrush = if (isUser) {
+        Brush.horizontalGradient(
+            colors = listOf(
+                MaterialTheme.colorScheme.primary,
+                MaterialTheme.colorScheme.primaryContainer
+            )
+        )
     } else {
-        MaterialTheme.colorScheme.secondaryContainer
+        Brush.horizontalGradient(
+            colors = listOf(
+                MaterialTheme.colorScheme.surfaceVariant,
+                MaterialTheme.colorScheme.surface
+            )
+        )
     }
     val textColor = if (isUser) {
-        MaterialTheme.colorScheme.onPrimaryContainer
+        MaterialTheme.colorScheme.onPrimary
     } else {
-        MaterialTheme.colorScheme.onSecondaryContainer
+        MaterialTheme.colorScheme.onSurface
     }
 
     Box(
@@ -39,15 +51,17 @@ fun ChatMessageBubble(
         Box(
             modifier = Modifier
                 .align(if (isUser) Alignment.CenterEnd else Alignment.CenterStart)
-                .clip(RoundedCornerShape(18.dp))
-                .background(bubbleColor)
-                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .shadow(elevation = 6.dp, shape = RoundedCornerShape(22.dp))
+                .clip(RoundedCornerShape(22.dp))
+                .background(bubbleBrush)
+                .padding(horizontal = 18.dp, vertical = 14.dp)
         ) {
             Text(
                 text = message,
                 style = MaterialTheme.typography.bodyLarge,
                 color = textColor,
-                textAlign = TextAlign.Start
+                textAlign = TextAlign.Start,
+                lineHeight = MaterialTheme.typography.bodyLarge.lineHeight
             )
         }
     }

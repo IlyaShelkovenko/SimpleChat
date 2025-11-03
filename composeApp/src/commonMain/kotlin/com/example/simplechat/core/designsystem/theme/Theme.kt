@@ -5,42 +5,44 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.toArgb
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private val LightColors = lightColorScheme(
-    primary = SimpleChatColors.DeepLilac,
-    onPrimary = SimpleChatColors.SoftTextInverse,
-    primaryContainer = SimpleChatColors.Lilac,
-    onPrimaryContainer = SimpleChatColors.Slate,
-    secondary = SimpleChatColors.AccentTeal,
-    onSecondary = SimpleChatColors.SoftTextInverse,
-    background = SimpleChatColors.LavenderBlush,
-    onBackground = SimpleChatColors.SoftText,
-    surface = SimpleChatColors.MintCream,
-    onSurface = SimpleChatColors.SoftText,
-    surfaceVariant = SimpleChatColors.MistBlue,
-    onSurfaceVariant = SimpleChatColors.Slate,
-    error = SimpleChatColors.AccentCoral,
-    onError = SimpleChatColors.SoftText
+    primary = SimpleChatColors.AuroraBlue,
+    onPrimary = SimpleChatColors.SoftWhite,
+    primaryContainer = SimpleChatColors.SkyMist,
+    onPrimaryContainer = SimpleChatColors.Twilight,
+    secondary = SimpleChatColors.CoralGlow,
+    onSecondary = SimpleChatColors.SoftWhite,
+    secondaryContainer = SimpleChatColors.PeachGlow,
+    onSecondaryContainer = SimpleChatColors.Twilight,
+    background = SimpleChatColors.SoftWhite,
+    onBackground = SimpleChatColors.Twilight,
+    surface = SimpleChatColors.WhisperGray,
+    onSurface = SimpleChatColors.Twilight,
+    surfaceVariant = SimpleChatColors.SkyMist,
+    onSurfaceVariant = SimpleChatColors.Twilight,
+    error = SimpleChatColors.CoralGlow,
+    onError = SimpleChatColors.SoftWhite
 )
 
 private val DarkColors = darkColorScheme(
-    primary = SimpleChatColors.Lilac,
-    onPrimary = SimpleChatColors.MidnightBlue,
-    primaryContainer = SimpleChatColors.MidnightBlue,
-    onPrimaryContainer = SimpleChatColors.SoftTextInverse,
-    secondary = SimpleChatColors.AccentTeal,
-    onSecondary = SimpleChatColors.MidnightBlue,
-    background = SimpleChatColors.Slate,
-    onBackground = SimpleChatColors.SoftTextInverse,
-    surface = SimpleChatColors.MidnightBlue,
-    onSurface = SimpleChatColors.SoftTextInverse,
-    surfaceVariant = SimpleChatColors.DeepLilac,
-    onSurfaceVariant = SimpleChatColors.SoftTextInverse,
-    error = SimpleChatColors.AccentCoral,
-    onError = SimpleChatColors.MidnightBlue
+    primary = SimpleChatColors.MintGlow,
+    onPrimary = SimpleChatColors.DeepSpace,
+    primaryContainer = SimpleChatColors.Twilight,
+    onPrimaryContainer = SimpleChatColors.SoftWhite,
+    secondary = SimpleChatColors.CoralGlow,
+    onSecondary = SimpleChatColors.DeepSpace,
+    secondaryContainer = SimpleChatColors.Twilight,
+    onSecondaryContainer = SimpleChatColors.SoftWhite,
+    background = SimpleChatColors.DeepSpace,
+    onBackground = SimpleChatColors.SoftWhite,
+    surface = SimpleChatColors.Midnight,
+    onSurface = SimpleChatColors.SoftWhite,
+    surfaceVariant = SimpleChatColors.Twilight,
+    onSurfaceVariant = SimpleChatColors.SlateGray,
+    error = SimpleChatColors.CoralGlow,
+    onError = SimpleChatColors.DeepSpace
 )
 
 @Composable
