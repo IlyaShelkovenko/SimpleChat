@@ -3,16 +3,16 @@ package com.example.simplechat.core.designsystem.theme
 import androidx.compose.ui.graphics.Color
 
 object SimpleChatColors {
-    val LavenderBlush = Color(0xFFF6E6F5)
-    val MistBlue = Color(0xFFE1F0FF)
-    val MintCream = Color(0xFFE4FFF4)
-    val PeachFuzz = Color(0xFFFFE4D6)
-    val Lilac = Color(0xFFDCC6FF)
-    val DeepLilac = Color(0xFF7C5FCF)
-    val MidnightBlue = Color(0xFF1F2A44)
-    val Slate = Color(0xFF2D3B55)
-    val SoftText = Color(0xFF2F2A3D)
-    val SoftTextInverse = Color(0xFFF6F2FF)
-    val AccentTeal = Color(0xFF4AB3AF)
-    val AccentCoral = Color(0xFFFF9E9E)
+    val DeepSpace = Color(0xFF020817)
+    val Midnight = Color(0xFF0F172A)
+    val Twilight = Color(0xFF1E293B)
+    val SlateGray = Color(0xFF94A3B8)
+    val WhisperGray = Color(0xFFE2E8F0)
+    val SoftWhite = Color(0xFFF8FAFC)
+    val AuroraBlue = Color(0xFF2563EB)
+    val SkyPulse = Color(0xFF3B82F6)
+    val SkyMist = Color(0xFFBAE6FD)
+    val MintGlow = Color(0xFF22D3EE)
+    val CoralGlow = Color(0xFFFF6B6B)
+    val PeachGlow = Color(0xFFFF9E7C)
 }
