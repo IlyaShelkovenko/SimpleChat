@@ -23,6 +23,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 private const val DEFAULT_SYSTEM_PROMPT = "You are a helpful assistant."
+private const val STREAM_TERMINATION_TOKEN = "[DONE]"
 
 class ChatApiService(
     private val client: HttpClient,
@@ -81,7 +82,7 @@ class ChatApiService(
             val eventBuffer = StringBuilder()
             suspend fun processPayload(payload: String): Boolean {
                 if (payload.isEmpty()) return false
-                if (payload == "[DONE]") return true
+                if (payload == STREAM_TERMINATION_TOKEN) return true
 
                 val chunk = try {
                     json.decodeFromString<YandexCompletionResponse>(payload)
@@ -116,6 +117,10 @@ class ChatApiService(
                     val payload = eventBuffer.toString().trim()
                     eventBuffer.clear()
                     if (processPayload(payload)) break
+                    continue
+                }
+
+                if (line.startsWith(":")) {
                     continue
                 }
 
