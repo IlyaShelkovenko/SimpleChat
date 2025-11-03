@@ -44,6 +44,7 @@ fun ApiKeyRoute(
     ApiKeyScreen(
         state = uiState,
         onApiKeyChanged = { viewModel.onEvent(ApiKeyEvent.ApiKeyChanged(it)) },
+        onFolderIdChanged = { viewModel.onEvent(ApiKeyEvent.FolderIdChanged(it)) },
         onSubmit = { viewModel.onEvent(ApiKeyEvent.Submit) }
     )
 }
@@ -52,6 +53,7 @@ fun ApiKeyRoute(
 fun ApiKeyScreen(
     state: ApiKeyUiState,
     onApiKeyChanged: (String) -> Unit,
+    onFolderIdChanged: (String) -> Unit,
     onSubmit: () -> Unit
 ) {
     Column(
@@ -71,7 +73,7 @@ fun ApiKeyScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Enter your AI API key",
+                    text = "Enter your YandexGPT credentials",
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -82,6 +84,15 @@ fun ApiKeyScreen(
                     visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth(),
                     label = { Text("API Key") },
+                    singleLine = true,
+                    enabled = !state.isSubmitting
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                OutlinedTextField(
+                    value = state.folderId,
+                    onValueChange = onFolderIdChanged,
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text("Folder ID") },
                     singleLine = true,
                     enabled = !state.isSubmitting
                 )
