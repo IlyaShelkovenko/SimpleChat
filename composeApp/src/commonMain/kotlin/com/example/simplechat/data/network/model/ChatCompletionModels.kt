@@ -25,11 +25,31 @@ data class YandexCompletionRequest(
 
 @Serializable
 data class YandexCompletionResponse(
-    val alternatives: List<Alternative> = emptyList()
+    val result: Result? = null
 ) {
+    @Serializable
+    data class Result(
+        val alternatives: List<Alternative> = emptyList(),
+        val usage: Usage? = null,
+        val modelVersion: String? = null
+    )
+
     @Serializable
     data class Alternative(
         val message: YandexMessageDto? = null,
         @SerialName("status") val status: String? = null
+    )
+
+    @Serializable
+    data class Usage(
+        val inputTextTokens: Int? = null,
+        val completionTokens: Int? = null,
+        val totalTokens: Int? = null,
+        val completionTokensDetails: CompletionTokensDetails? = null
+    )
+
+    @Serializable
+    data class CompletionTokensDetails(
+        val reasoningTokens: Int? = null
     )
 }
