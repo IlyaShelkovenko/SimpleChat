@@ -1,49 +1,71 @@
 package com.example.simplechat
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
-
-import simplechat.composeapp.generated.resources.Res
-import simplechat.composeapp.generated.resources.compose_multiplatform
-
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
+import com.example.simplechat.core.designsystem.theme.SimpleChatTheme
+import com.example.simplechat.presentation.app.AppState
+import com.example.simplechat.presentation.app.AppViewModel
+import com.example.simplechat.presentation.app.SimpleChatViewModelFactory
+import com.example.simplechat.presentation.navigation.SimpleChatDestination
+import com.example.simplechat.presentation.navigation.SimpleChatNavHost
 @Composable
-@Preview
 fun App() {
-    MaterialTheme {
-        var showContent by remember { mutableStateOf(false) }
-        Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .safeContentPadding()
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Button(onClick = { showContent = !showContent }) {
-                Text("Click me!")
-            }
-            AnimatedVisibility(showContent) {
-                val greeting = remember { Greeting().greet() }
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text("Compose: $greeting")
+    SimpleChatTheme {
+        val navController = rememberNavController()
+        val appViewModel: AppViewModel = viewModel(factory = SimpleChatViewModelFactory.appViewModelFactory())
+        val appState by appViewModel.state.collectAsState()
+
+        LaunchedEffect(appState) {
+            if (appState == AppState.Ready) {
+                navController.navigate(SimpleChatDestination.Chat) {
+                    popUpTo(SimpleChatDestination.ApiKey) { inclusive = true }
+                    launchSingleTop = true
                 }
             }
+        }
+
+        when (appState) {
+            AppState.Loading -> LoadingContent()
+            else -> SimpleChatNavHost(
+                navController = navController,
+                startDestination = if (appState == AppState.Ready) {
+                    SimpleChatDestination.Chat
+                } else {
+                    SimpleChatDestination.ApiKey
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun LoadingContent() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            CircularProgressIndicator(modifier = Modifier.size(48.dp))
         }
     }
 }
