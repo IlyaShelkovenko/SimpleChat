@@ -5,10 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.simplechat.domain.model.ChatMessage
 import com.example.simplechat.domain.model.MessageRole
 import com.example.simplechat.domain.usecase.SendPromptUseCase
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
@@ -50,21 +52,56 @@ class ChatViewModel(
             errorMessage = null
         )
 
-        viewModelScope.launch {
-            sendPromptUseCase(prompt)
-                .onSuccess { assistantMessage ->
-                    _uiState.value = _uiState.value.copy(
-                        messages = _uiState.value.messages + assistantMessage,
-                        isLoading = false
-                    )
+        viewModelScope.launch submissionJob@{
+            var assistantMessageId: String? = null
+            var failureHandled = false
+
+            try {
+                sendPromptUseCase(prompt).collect { result ->
+                    result.onSuccess { assistantMessage ->
+                        assistantMessageId = assistantMessage.id
+                        val currentMessages = _uiState.value.messages
+                        val existingIndex = currentMessages.indexOfFirst { it.id == assistantMessage.id }
+                        val updatedMessages = if (existingIndex == -1) {
+                            currentMessages + assistantMessage
+                        } else {
+                            currentMessages.toMutableList().apply { this[existingIndex] = assistantMessage }
+                        }
+
+                        _uiState.value = _uiState.value.copy(
+                            messages = updatedMessages,
+                            errorMessage = null
+                        )
+                    }
+
+                    result.onFailure { error ->
+                        failureHandled = true
+                        if (error is CancellationException) throw error
+
+                        val cleanedMessages = assistantMessageId?.let { id ->
+                            _uiState.value.messages.filterNot { it.id == id }
+                        } ?: _uiState.value.messages
+
+                        _uiState.value = _uiState.value.copy(
+                            messages = cleanedMessages,
+                            errorMessage = error.message
+                        )
+
+                        emitError(error.message ?: "Unable to get response")
+                        return@submissionJob
+                    }
                 }
-                .onFailure { error ->
+            } catch (error: Throwable) {
+                if (error is CancellationException) throw error
+                if (!failureHandled) {
                     _uiState.value = _uiState.value.copy(
-                        isLoading = false,
                         errorMessage = error.message
                     )
                     emitError(error.message ?: "Unable to get response")
                 }
+            } finally {
+                _uiState.value = _uiState.value.copy(isLoading = false)
+            }
         }
     }
 
