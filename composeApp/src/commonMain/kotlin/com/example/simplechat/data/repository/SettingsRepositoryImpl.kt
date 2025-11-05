@@ -17,6 +17,7 @@ private const val API_KEY_STORAGE_KEY = "ai_api_key"
 private const val FOLDER_ID_STORAGE_KEY = "ai_folder_id"
 private const val CUSTOM_PROMPT_STORAGE_KEY = "assistant_custom_prompt"
 private const val CUSTOM_PROMPT_ENABLED_STORAGE_KEY = "assistant_custom_prompt_enabled"
+private const val JSON_FORMAT_ENABLED_STORAGE_KEY = "assistant_json_format_enabled"
 
 class SettingsRepositoryImpl(
     private val secureStorage: SecureStorage,
@@ -39,9 +40,11 @@ class SettingsRepositoryImpl(
         scope.launch {
             val isEnabled = secureStorage.read(CUSTOM_PROMPT_ENABLED_STORAGE_KEY)?.toBooleanStrictOrNull() ?: false
             val prompt = secureStorage.read(CUSTOM_PROMPT_STORAGE_KEY).orEmpty()
+            val isJsonFormatEnabled = secureStorage.read(JSON_FORMAT_ENABLED_STORAGE_KEY)?.toBooleanStrictOrNull() ?: false
             _assistantSettingsState.value = AssistantSettings(
                 customSystemPrompt = prompt,
-                isCustomPromptEnabled = isEnabled
+                isCustomPromptEnabled = isEnabled,
+                isJsonFormatEnabled = isJsonFormatEnabled
             )
         }
     }
@@ -70,12 +73,18 @@ class SettingsRepositoryImpl(
 
     override fun observeCredentials(): StateFlow<YandexCredentials?> = _credentialsState.asStateFlow()
 
-    override suspend fun saveAssistantSettings(useCustomSystemPrompt: Boolean, customSystemPrompt: String) {
+    override suspend fun saveAssistantSettings(
+        useCustomSystemPrompt: Boolean,
+        customSystemPrompt: String,
+        useJsonFormat: Boolean
+    ) {
         secureStorage.write(CUSTOM_PROMPT_ENABLED_STORAGE_KEY, useCustomSystemPrompt.toString())
         secureStorage.write(CUSTOM_PROMPT_STORAGE_KEY, customSystemPrompt)
+        secureStorage.write(JSON_FORMAT_ENABLED_STORAGE_KEY, useJsonFormat.toString())
         _assistantSettingsState.value = AssistantSettings(
             customSystemPrompt = customSystemPrompt,
-            isCustomPromptEnabled = useCustomSystemPrompt
+            isCustomPromptEnabled = useCustomSystemPrompt,
+            isJsonFormatEnabled = useJsonFormat
         )
     }
 
@@ -85,9 +94,11 @@ class SettingsRepositoryImpl(
 
         val isEnabled = secureStorage.read(CUSTOM_PROMPT_ENABLED_STORAGE_KEY)?.toBooleanStrictOrNull() ?: false
         val prompt = secureStorage.read(CUSTOM_PROMPT_STORAGE_KEY).orEmpty()
+        val isJsonFormatEnabled = secureStorage.read(JSON_FORMAT_ENABLED_STORAGE_KEY)?.toBooleanStrictOrNull() ?: false
         return AssistantSettings(
             customSystemPrompt = prompt,
-            isCustomPromptEnabled = isEnabled
+            isCustomPromptEnabled = isEnabled,
+            isJsonFormatEnabled = isJsonFormatEnabled
         ).also { settings ->
             _assistantSettingsState.value = settings
         }

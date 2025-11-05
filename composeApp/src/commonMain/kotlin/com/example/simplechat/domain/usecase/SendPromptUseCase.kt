@@ -24,7 +24,8 @@ class SendPromptUseCase(
             credentials.apiKey,
             credentials.folderId,
             prompt,
-            systemPrompt
+            systemPrompt,
+            requestJson = assistantSettings.isJsonFormatEnabled
         )
     }
 }

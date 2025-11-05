@@ -31,7 +31,19 @@ class SettingsViewModel(
             }
 
             is SettingsEvent.CustomSystemPromptEnabledChanged -> updateState {
-                copy(isCustomPromptEnabled = event.enabled, isSaved = false)
+                copy(
+                    isCustomPromptEnabled = event.enabled,
+                    isJsonFormatEnabled = if (event.enabled) false else isJsonFormatEnabled,
+                    isSaved = false
+                )
+            }
+
+            is SettingsEvent.JsonFormatEnabledChanged -> updateState {
+                copy(
+                    isJsonFormatEnabled = event.enabled,
+                    isCustomPromptEnabled = if (event.enabled) false else isCustomPromptEnabled,
+                    isSaved = false
+                )
             }
 
             SettingsEvent.Save -> saveSettings()
@@ -45,7 +57,8 @@ class SettingsViewModel(
                 updateState {
                     copy(
                         customSystemPrompt = settings.customSystemPrompt,
-                        isCustomPromptEnabled = settings.isCustomPromptEnabled
+                        isCustomPromptEnabled = settings.isCustomPromptEnabled,
+                        isJsonFormatEnabled = settings.isJsonFormatEnabled
                     )
                 }
             }
@@ -59,7 +72,8 @@ class SettingsViewModel(
         viewModelScope.launch {
             saveAssistantSettingsUseCase(
                 useCustomSystemPrompt = currentState.isCustomPromptEnabled,
-                customSystemPrompt = currentState.customSystemPrompt
+                customSystemPrompt = currentState.customSystemPrompt,
+                useJsonFormat = currentState.isJsonFormatEnabled
             )
             updateState { copy(isSaving = false, isSaved = true) }
         }

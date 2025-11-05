@@ -8,7 +8,11 @@ interface SettingsRepository {
     suspend fun saveCredentials(apiKey: String, folderId: String)
     suspend fun getCredentials(): YandexCredentials?
     fun observeCredentials(): Flow<YandexCredentials?>
-    suspend fun saveAssistantSettings(useCustomSystemPrompt: Boolean, customSystemPrompt: String)
+    suspend fun saveAssistantSettings(
+        useCustomSystemPrompt: Boolean,
+        customSystemPrompt: String,
+        useJsonFormat: Boolean
+    )
     suspend fun getAssistantSettings(): AssistantSettings
     fun observeAssistantSettings(): Flow<AssistantSettings>
 }
