@@ -1,0 +1,6 @@
+package com.example.simplechat.domain.model
+
+data class AssistantSettings(
+    val customSystemPrompt: String = "",
+    val isCustomPromptEnabled: Boolean = false
+)
