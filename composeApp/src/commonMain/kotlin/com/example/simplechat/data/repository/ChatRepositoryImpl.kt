@@ -8,8 +8,14 @@ import com.example.simplechat.domain.repository.ChatRepository
 class ChatRepositoryImpl(
     private val apiService: ChatApiService
 ) : ChatRepository {
-    override suspend fun sendPrompt(apiKey: String, folderId: String, prompt: String): Result<ChatMessage> = runCatching {
-        val response = apiService.sendPrompt(apiKey, folderId, prompt)
+    override suspend fun sendPrompt(
+        apiKey: String,
+        folderId: String,
+        prompt: String,
+        systemPrompt: String?,
+        requestJson: Boolean
+    ): Result<ChatMessage> = runCatching {
+        val response = apiService.sendPrompt(apiKey, folderId, prompt, systemPrompt, requestJson)
         val content = response.result?.alternatives?.firstOrNull()?.message?.text
             ?: throw IllegalStateException("Empty response from assistant")
         ChatMessage(

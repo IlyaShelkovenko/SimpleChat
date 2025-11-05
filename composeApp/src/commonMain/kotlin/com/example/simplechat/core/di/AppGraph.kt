@@ -10,7 +10,9 @@ import com.example.simplechat.domain.repository.ChatRepository
 import com.example.simplechat.domain.repository.SettingsRepository
 import com.example.simplechat.domain.usecase.GetYandexCredentialsUseCase
 import com.example.simplechat.domain.usecase.ObserveYandexCredentialsUseCase
+import com.example.simplechat.domain.usecase.ObserveAssistantSettingsUseCase
 import com.example.simplechat.domain.usecase.SaveYandexCredentialsUseCase
+import com.example.simplechat.domain.usecase.SaveAssistantSettingsUseCase
 import com.example.simplechat.domain.usecase.SendPromptUseCase
 
 object AppGraph {
@@ -29,6 +31,8 @@ object AppGraph {
     val getYandexCredentialsUseCase: GetYandexCredentialsUseCase by lazy { GetYandexCredentialsUseCase(settingsRepository) }
     val saveYandexCredentialsUseCase: SaveYandexCredentialsUseCase by lazy { SaveYandexCredentialsUseCase(settingsRepository) }
     val observeYandexCredentialsUseCase: ObserveYandexCredentialsUseCase by lazy { ObserveYandexCredentialsUseCase(settingsRepository) }
+    val observeAssistantSettingsUseCase: ObserveAssistantSettingsUseCase by lazy { ObserveAssistantSettingsUseCase(settingsRepository) }
+    val saveAssistantSettingsUseCase: SaveAssistantSettingsUseCase by lazy { SaveAssistantSettingsUseCase(settingsRepository) }
     val sendPromptUseCase: SendPromptUseCase by lazy { SendPromptUseCase(chatRepository, settingsRepository) }
 
     fun initialize(platformConfiguration: PlatformConfiguration) {

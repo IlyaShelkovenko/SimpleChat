@@ -19,6 +19,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -32,6 +34,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Settings
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.simplechat.domain.model.MessageRole
 import com.example.simplechat.presentation.app.SimpleChatViewModelFactory
@@ -39,6 +43,7 @@ import com.example.simplechat.presentation.components.ChatMessageBubble
 
 @Composable
 fun ChatRoute(
+    onOpenSettings: () -> Unit,
     viewModel: ChatViewModel = viewModel(factory = SimpleChatViewModelFactory.chatViewModelFactory())
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -50,7 +55,8 @@ fun ChatRoute(
     ChatScreen(
         state = uiState,
         onPromptChanged = { viewModel.onEvent(ChatEvent.PromptChanged(it)) },
-        onSubmitPrompt = { viewModel.onEvent(ChatEvent.SubmitPrompt) }
+        onSubmitPrompt = { viewModel.onEvent(ChatEvent.SubmitPrompt) },
+        onOpenSettings = onOpenSettings
     )
 }
 
@@ -58,7 +64,8 @@ fun ChatRoute(
 fun ChatScreen(
     state: ChatUiState,
     onPromptChanged: (String) -> Unit,
-    onSubmitPrompt: () -> Unit
+    onSubmitPrompt: () -> Unit,
+    onOpenSettings: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -78,19 +85,32 @@ fun ChatScreen(
                 .padding(horizontal = 20.dp, vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(6.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Aurora Chat",
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                Text(
-                    text = "A calmer space to think, ideate, and explore your ideas.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
-                )
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Text(
+                        text = "Aurora Chat",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Text(
+                        text = "A calmer space to think, ideate, and explore your ideas.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                    )
+                }
+                IconButton(onClick = onOpenSettings) {
+                    Icon(
+                        imageVector = Icons.Outlined.Settings,
+                        contentDescription = "Open settings",
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
+                }
             }
 
             Card(
@@ -151,7 +171,12 @@ fun ChatScreen(
                         value = state.prompt,
                         onValueChange = onPromptChanged,
                         modifier = Modifier.fillMaxWidth(),
-                        placeholder = { Text("Type your message") },
+                        placeholder = {
+                            Text(
+                                "Type your message",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
                         enabled = !state.isLoading,
                         shape = RoundedCornerShape(20.dp),
                         colors = TextFieldDefaults.colors(

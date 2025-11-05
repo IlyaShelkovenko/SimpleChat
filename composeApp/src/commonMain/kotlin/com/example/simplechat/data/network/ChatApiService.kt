@@ -20,7 +20,14 @@ class ChatApiService(
     private val baseUrl: String = "https://llm.api.cloud.yandex.net/foundationModels/v1/completion",
     private val model: String = "yandexgpt-lite"
 ) {
-    suspend fun sendPrompt(apiKey: String, folderId: String, prompt: String): YandexCompletionResponse {
+    suspend fun sendPrompt(
+        apiKey: String,
+        folderId: String,
+        prompt: String,
+        systemPrompt: String?,
+        requestJson: Boolean
+    ): YandexCompletionResponse {
+        val resolvedSystemPrompt = systemPrompt?.takeIf { it.isNotBlank() } ?: DEFAULT_SYSTEM_PROMPT
         val request = YandexCompletionRequest(
             modelUri = "gpt://$folderId/$model/latest",
             completionOptions = YandexCompletionOptions(
@@ -29,9 +36,10 @@ class ChatApiService(
                 maxTokens = null
             ),
             messages = listOf(
-                YandexMessageDto(role = "system", text = DEFAULT_SYSTEM_PROMPT),
+                YandexMessageDto(role = "system", text = resolvedSystemPrompt),
                 YandexMessageDto(role = "user", text = prompt)
-            )
+            ),
+            jsonObject = if (requestJson) true else null
         )
 
         return client.post(baseUrl) {

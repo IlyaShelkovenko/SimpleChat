@@ -14,6 +14,18 @@ class SendPromptUseCase(
         if (credentials.apiKey.isBlank() || credentials.folderId.isBlank()) {
             return Result.failure(IllegalStateException("API key or folder ID missing"))
         }
-        return chatRepository.sendPrompt(credentials.apiKey, credentials.folderId, prompt)
+        val assistantSettings = settingsRepository.getAssistantSettings()
+        val systemPrompt = if (assistantSettings.isCustomPromptEnabled) {
+            assistantSettings.customSystemPrompt.takeIf { it.isNotBlank() }
+        } else {
+            null
+        }
+        return chatRepository.sendPrompt(
+            credentials.apiKey,
+            credentials.folderId,
+            prompt,
+            systemPrompt,
+            requestJson = assistantSettings.isJsonFormatEnabled
+        )
     }
 }

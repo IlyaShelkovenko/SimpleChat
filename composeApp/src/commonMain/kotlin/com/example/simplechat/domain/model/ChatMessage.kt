@@ -1,15 +1,16 @@
 package com.example.simplechat.domain.model
 
-import kotlinx.datetime.Clock
+import kotlin.time.Clock.*
+import kotlin.time.ExperimentalTime
 
 enum class MessageRole {
     USER,
     ASSISTANT
 }
 
-data class ChatMessage(
-    val id: String = "msg_${Clock.System.now().toEpochMilliseconds()}",
+data class ChatMessage @OptIn(ExperimentalTime::class) constructor(
+    val id: String = "msg_${System.now().toEpochMilliseconds()}",
     val role: MessageRole,
     val content: String,
-    val createdAt: Long = Clock.System.now().toEpochMilliseconds()
+    val createdAt: Long = System.now().toEpochMilliseconds()
 )

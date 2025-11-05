@@ -1,6 +1,7 @@
 package com.example.simplechat.data.repository
 
 import com.example.simplechat.data.storage.SecureStorage
+import com.example.simplechat.domain.model.AssistantSettings
 import com.example.simplechat.domain.model.YandexCredentials
 import com.example.simplechat.domain.repository.SettingsRepository
 import kotlinx.coroutines.CoroutineDispatcher
@@ -14,6 +15,9 @@ import kotlinx.coroutines.SupervisorJob
 
 private const val API_KEY_STORAGE_KEY = "ai_api_key"
 private const val FOLDER_ID_STORAGE_KEY = "ai_folder_id"
+private const val CUSTOM_PROMPT_STORAGE_KEY = "assistant_custom_prompt"
+private const val CUSTOM_PROMPT_ENABLED_STORAGE_KEY = "assistant_custom_prompt_enabled"
+private const val JSON_FORMAT_ENABLED_STORAGE_KEY = "assistant_json_format_enabled"
 
 class SettingsRepositoryImpl(
     private val secureStorage: SecureStorage,
@@ -21,6 +25,7 @@ class SettingsRepositoryImpl(
 ) : SettingsRepository {
     private val scope = CoroutineScope(SupervisorJob() + dispatcher)
     private val _credentialsState: MutableStateFlow<YandexCredentials?> = MutableStateFlow(null)
+    private val _assistantSettingsState: MutableStateFlow<AssistantSettings> = MutableStateFlow(AssistantSettings())
 
     init {
         scope.launch {
@@ -31,6 +36,16 @@ class SettingsRepositoryImpl(
             } else {
                 null
             }
+        }
+        scope.launch {
+            val isEnabled = secureStorage.read(CUSTOM_PROMPT_ENABLED_STORAGE_KEY)?.toBooleanStrictOrNull() ?: false
+            val prompt = secureStorage.read(CUSTOM_PROMPT_STORAGE_KEY).orEmpty()
+            val isJsonFormatEnabled = secureStorage.read(JSON_FORMAT_ENABLED_STORAGE_KEY)?.toBooleanStrictOrNull() ?: false
+            _assistantSettingsState.value = AssistantSettings(
+                customSystemPrompt = prompt,
+                isCustomPromptEnabled = isEnabled,
+                isJsonFormatEnabled = isJsonFormatEnabled
+            )
         }
     }
 
@@ -57,4 +72,37 @@ class SettingsRepositoryImpl(
     }
 
     override fun observeCredentials(): StateFlow<YandexCredentials?> = _credentialsState.asStateFlow()
+
+    override suspend fun saveAssistantSettings(
+        useCustomSystemPrompt: Boolean,
+        customSystemPrompt: String,
+        useJsonFormat: Boolean
+    ) {
+        secureStorage.write(CUSTOM_PROMPT_ENABLED_STORAGE_KEY, useCustomSystemPrompt.toString())
+        secureStorage.write(CUSTOM_PROMPT_STORAGE_KEY, customSystemPrompt)
+        secureStorage.write(JSON_FORMAT_ENABLED_STORAGE_KEY, useJsonFormat.toString())
+        _assistantSettingsState.value = AssistantSettings(
+            customSystemPrompt = customSystemPrompt,
+            isCustomPromptEnabled = useCustomSystemPrompt,
+            isJsonFormatEnabled = useJsonFormat
+        )
+    }
+
+    override suspend fun getAssistantSettings(): AssistantSettings {
+        val current = _assistantSettingsState.value
+        if (current != AssistantSettings()) return current
+
+        val isEnabled = secureStorage.read(CUSTOM_PROMPT_ENABLED_STORAGE_KEY)?.toBooleanStrictOrNull() ?: false
+        val prompt = secureStorage.read(CUSTOM_PROMPT_STORAGE_KEY).orEmpty()
+        val isJsonFormatEnabled = secureStorage.read(JSON_FORMAT_ENABLED_STORAGE_KEY)?.toBooleanStrictOrNull() ?: false
+        return AssistantSettings(
+            customSystemPrompt = prompt,
+            isCustomPromptEnabled = isEnabled,
+            isJsonFormatEnabled = isJsonFormatEnabled
+        ).also { settings ->
+            _assistantSettingsState.value = settings
+        }
+    }
+
+    override fun observeAssistantSettings(): StateFlow<AssistantSettings> = _assistantSettingsState.asStateFlow()
 }
