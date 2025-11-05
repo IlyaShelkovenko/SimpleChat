@@ -41,7 +41,8 @@ fun SettingsRoute(
         state = uiState,
         onBack = onBack,
         onPromptChanged = { viewModel.onEvent(SettingsEvent.CustomSystemPromptChanged(it)) },
-        onToggleChanged = { viewModel.onEvent(SettingsEvent.CustomSystemPromptEnabledChanged(it)) },
+        onCustomToggleChanged = { viewModel.onEvent(SettingsEvent.CustomSystemPromptEnabledChanged(it)) },
+        onJsonToggleChanged = { viewModel.onEvent(SettingsEvent.JsonFormatEnabledChanged(it)) },
         onSave = { viewModel.onEvent(SettingsEvent.Save) }
     )
 }
@@ -51,7 +52,8 @@ fun SettingsScreen(
     state: SettingsUiState,
     onBack: () -> Unit,
     onPromptChanged: (String) -> Unit,
-    onToggleChanged: (Boolean) -> Unit,
+    onCustomToggleChanged: (Boolean) -> Unit,
+    onJsonToggleChanged: (Boolean) -> Unit,
     onSave: () -> Unit
 ) {
     Column(
@@ -109,7 +111,32 @@ fun SettingsScreen(
                     }
                     Switch(
                         checked = state.isCustomPromptEnabled,
-                        onCheckedChange = onToggleChanged
+                        onCheckedChange = onCustomToggleChanged,
+                        enabled = !state.isJsonFormatEnabled
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Use JSON format",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "Request responses structured as JSON using the API parameter.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Switch(
+                        checked = state.isJsonFormatEnabled,
+                        onCheckedChange = onJsonToggleChanged,
+                        enabled = !state.isCustomPromptEnabled
                     )
                 }
 
@@ -120,7 +147,10 @@ fun SettingsScreen(
                         .fillMaxWidth()
                         .height(160.dp),
                     placeholder = {
-                        Text("e.g. Reply using bullet points and include a summary at the end.")
+                        Text(
+                            "e.g. Reply using bullet points and include a summary at the end.",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     },
                     enabled = state.isCustomPromptEnabled,
                     singleLine = false,

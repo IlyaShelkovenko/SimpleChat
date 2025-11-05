@@ -7,6 +7,7 @@ interface ChatRepository {
         apiKey: String,
         folderId: String,
         prompt: String,
-        systemPrompt: String?
+        systemPrompt: String?,
+        requestJson: Boolean
     ): Result<ChatMessage>
 }

@@ -5,7 +5,15 @@ import com.example.simplechat.domain.repository.SettingsRepository
 class SaveAssistantSettingsUseCase(
     private val settingsRepository: SettingsRepository
 ) {
-    suspend operator fun invoke(useCustomSystemPrompt: Boolean, customSystemPrompt: String) {
-        settingsRepository.saveAssistantSettings(useCustomSystemPrompt, customSystemPrompt)
+    suspend operator fun invoke(
+        useCustomSystemPrompt: Boolean,
+        customSystemPrompt: String,
+        useJsonFormat: Boolean
+    ) {
+        settingsRepository.saveAssistantSettings(
+            useCustomSystemPrompt = useCustomSystemPrompt,
+            customSystemPrompt = customSystemPrompt,
+            useJsonFormat = useJsonFormat
+        )
     }
 }

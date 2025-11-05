@@ -20,7 +20,9 @@ data class YandexCompletionOptions(
 data class YandexCompletionRequest(
     val modelUri: String,
     val completionOptions: YandexCompletionOptions,
-    val messages: List<YandexMessageDto>
+    val messages: List<YandexMessageDto>,
+    @SerialName("json_object")
+    val jsonObject: Boolean? = null
 )
 
 @Serializable

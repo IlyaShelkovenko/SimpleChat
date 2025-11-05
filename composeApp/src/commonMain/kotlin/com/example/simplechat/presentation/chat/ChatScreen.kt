@@ -171,7 +171,12 @@ fun ChatScreen(
                         value = state.prompt,
                         onValueChange = onPromptChanged,
                         modifier = Modifier.fillMaxWidth(),
-                        placeholder = { Text("Type your message") },
+                        placeholder = {
+                            Text(
+                                "Type your message",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
                         enabled = !state.isLoading,
                         shape = RoundedCornerShape(20.dp),
                         colors = TextFieldDefaults.colors(

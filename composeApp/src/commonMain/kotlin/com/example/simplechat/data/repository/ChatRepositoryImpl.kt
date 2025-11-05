@@ -12,9 +12,10 @@ class ChatRepositoryImpl(
         apiKey: String,
         folderId: String,
         prompt: String,
-        systemPrompt: String?
+        systemPrompt: String?,
+        requestJson: Boolean
     ): Result<ChatMessage> = runCatching {
-        val response = apiService.sendPrompt(apiKey, folderId, prompt, systemPrompt)
+        val response = apiService.sendPrompt(apiKey, folderId, prompt, systemPrompt, requestJson)
         val content = response.result?.alternatives?.firstOrNull()?.message?.text
             ?: throw IllegalStateException("Empty response from assistant")
         ChatMessage(
