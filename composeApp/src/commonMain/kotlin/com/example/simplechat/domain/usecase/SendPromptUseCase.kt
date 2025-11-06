@@ -8,7 +8,10 @@ class SendPromptUseCase(
     private val chatRepository: ChatRepository,
     private val settingsRepository: SettingsRepository
 ) {
-    suspend operator fun invoke(prompt: String): Result<ChatMessage> {
+    suspend operator fun invoke(history: List<ChatMessage>): Result<ChatMessage> {
+        if (history.isEmpty()) {
+            return Result.failure(IllegalArgumentException("Conversation history is empty"))
+        }
         val credentials = settingsRepository.getCredentials()
             ?: return Result.failure(IllegalStateException("API key or folder ID missing"))
         if (credentials.apiKey.isBlank() || credentials.folderId.isBlank()) {
@@ -23,9 +26,9 @@ class SendPromptUseCase(
         return chatRepository.sendPrompt(
             credentials.apiKey,
             credentials.folderId,
-            prompt,
             systemPrompt,
-            requestJson = assistantSettings.isJsonFormatEnabled
+            requestJson = assistantSettings.isJsonFormatEnabled,
+            history = history
         )
     }
 }
