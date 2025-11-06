@@ -44,15 +44,16 @@ class ChatViewModel(
             role = MessageRole.USER,
             content = prompt
         )
+        val updatedHistory = history + userMessage
         _uiState.value = _uiState.value.copy(
-            messages = history + userMessage,
+            messages = updatedHistory,
             prompt = "",
             isLoading = true,
             errorMessage = null
         )
 
         viewModelScope.launch {
-            sendPromptUseCase(prompt, history)
+            sendPromptUseCase(updatedHistory)
                 .onSuccess { assistantMessage ->
                     _uiState.value = _uiState.value.copy(
                         messages = _uiState.value.messages + assistantMessage,

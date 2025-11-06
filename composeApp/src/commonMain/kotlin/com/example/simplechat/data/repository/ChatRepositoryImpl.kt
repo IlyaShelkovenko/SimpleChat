@@ -12,7 +12,6 @@ class ChatRepositoryImpl(
     override suspend fun sendPrompt(
         apiKey: String,
         folderId: String,
-        prompt: String,
         systemPrompt: String?,
         requestJson: Boolean,
         history: List<ChatMessage>
@@ -21,7 +20,6 @@ class ChatRepositoryImpl(
             history.forEach { message ->
                 message.toYandexMessageDto()?.let { add(it) }
             }
-            add(YandexMessageDto(role = "user", text = prompt))
         }
         val response = apiService.sendPrompt(
             apiKey = apiKey,

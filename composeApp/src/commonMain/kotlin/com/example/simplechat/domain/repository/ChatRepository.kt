@@ -6,7 +6,6 @@ interface ChatRepository {
     suspend fun sendPrompt(
         apiKey: String,
         folderId: String,
-        prompt: String,
         systemPrompt: String?,
         requestJson: Boolean,
         history: List<ChatMessage>
