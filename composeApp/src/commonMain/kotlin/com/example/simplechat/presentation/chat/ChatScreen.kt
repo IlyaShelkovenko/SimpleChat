@@ -22,6 +22,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -56,6 +57,7 @@ fun ChatRoute(
         state = uiState,
         onPromptChanged = { viewModel.onEvent(ChatEvent.PromptChanged(it)) },
         onSubmitPrompt = { viewModel.onEvent(ChatEvent.SubmitPrompt) },
+        onClearChat = { viewModel.onEvent(ChatEvent.ClearChat) },
         onOpenSettings = onOpenSettings
     )
 }
@@ -65,6 +67,7 @@ fun ChatScreen(
     state: ChatUiState,
     onPromptChanged: (String) -> Unit,
     onSubmitPrompt: () -> Unit,
+    onClearChat: () -> Unit,
     onOpenSettings: () -> Unit
 ) {
     Box(
@@ -193,17 +196,30 @@ fun ChatScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        AnimatedVisibility(visible = state.isLoading) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            AnimatedVisibility(visible = state.isLoading) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    CircularProgressIndicator(modifier = Modifier.height(32.dp))
+                                    Text(
+                                        text = "Thinking...",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+
+                            OutlinedButton(
+                                onClick = onClearChat,
+                                enabled = state.messages.isNotEmpty() && !state.isLoading,
+                                shape = RoundedCornerShape(18.dp)
                             ) {
-                                CircularProgressIndicator(modifier = Modifier.height(32.dp))
-                                Text(
-                                    text = "Thinking...",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
+                                Text("Clear")
                             }
                         }
 
