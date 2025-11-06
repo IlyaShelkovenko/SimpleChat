@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -116,6 +117,8 @@ fun ChatScreen(
                 }
             }
 
+            val listState = rememberLazyListState()
+
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -141,10 +144,17 @@ fun ChatScreen(
                         )
                     }
                 } else {
+                    LaunchedEffect(state.messages.size) {
+                        if (state.messages.isNotEmpty()) {
+                            listState.animateScrollToItem(state.messages.lastIndex)
+                        }
+                    }
+
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        state = listState
                     ) {
                         items(state.messages, key = { it.id }) { message ->
                             ChatMessageBubble(
@@ -196,6 +206,18 @@ fun ChatScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        Button(
+                            onClick = onSubmitPrompt,
+                            enabled = state.prompt.isNotBlank() && !state.isLoading,
+                            shape = RoundedCornerShape(18.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            )
+                        ) {
+                            Text("Send")
+                        }
+
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -221,18 +243,6 @@ fun ChatScreen(
                             ) {
                                 Text("Clear")
                             }
-                        }
-
-                        Button(
-                            onClick = onSubmitPrompt,
-                            enabled = state.prompt.isNotBlank() && !state.isLoading,
-                            shape = RoundedCornerShape(18.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary
-                            )
-                        ) {
-                            Text("Send")
                         }
                     }
                 }
