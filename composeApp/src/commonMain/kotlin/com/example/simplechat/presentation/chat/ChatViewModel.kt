@@ -29,6 +29,7 @@ class ChatViewModel(
             )
 
             ChatEvent.SubmitPrompt -> submitPrompt()
+            ChatEvent.ClearChat -> clearChat()
         }
     }
 
@@ -68,6 +69,10 @@ class ChatViewModel(
                     emitError(error.message ?: "Unable to get response")
                 }
         }
+    }
+
+    private fun clearChat() {
+        _uiState.value = ChatUiState()
     }
 
     private fun emitError(message: String) {
