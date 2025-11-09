@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -82,7 +83,7 @@ fun SettingsScreen(
         }
 
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxSize(),
             shape = RoundedCornerShape(24.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
@@ -144,8 +145,8 @@ fun SettingsScreen(
                     value = state.customSystemPrompt,
                     onValueChange = onPromptChanged,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(160.dp),
+                        .fillMaxHeight()
+                        .weight(1f),
                     placeholder = {
                         Text(
                             "e.g. Reply using bullet points and include a summary at the end.",
@@ -154,7 +155,6 @@ fun SettingsScreen(
                     },
                     enabled = state.isCustomPromptEnabled,
                     singleLine = false,
-                    minLines = 4
                 )
 
                 if (state.isSaved) {

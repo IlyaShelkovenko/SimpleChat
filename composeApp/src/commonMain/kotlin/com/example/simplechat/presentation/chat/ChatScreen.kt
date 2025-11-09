@@ -38,6 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.ui.unit.max
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.simplechat.domain.model.MessageRole
 import com.example.simplechat.presentation.app.SimpleChatViewModelFactory
@@ -190,6 +191,7 @@ fun ChatScreen(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         },
+                        maxLines = 10,
                         enabled = !state.isLoading,
                         shape = RoundedCornerShape(20.dp),
                         colors = TextFieldDefaults.colors(
