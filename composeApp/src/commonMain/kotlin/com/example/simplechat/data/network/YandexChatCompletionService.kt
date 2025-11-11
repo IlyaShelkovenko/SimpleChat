@@ -3,6 +3,7 @@ package com.example.simplechat.data.network
 import com.example.simplechat.data.network.model.ChatCompletionChoiceDto
 import com.example.simplechat.data.network.model.ChatCompletionMessageDto
 import com.example.simplechat.data.network.model.ChatCompletionResponseDto
+import com.example.simplechat.data.network.model.ChatCompletionUsageDto
 import com.example.simplechat.data.network.model.YandexMessageDto
 
 class YandexChatCompletionService(
@@ -35,8 +36,16 @@ class YandexChatCompletionService(
                 ChatCompletionMessageDto(role = "assistant", content = text)
             }
         )
+        val usage = response.result?.usage?.let { usage ->
+            ChatCompletionUsageDto(
+                promptTokens = usage.inputTextTokens,
+                completionTokens = usage.completionTokens,
+                totalTokens = usage.totalTokens
+            )
+        }
         return ChatCompletionResponseDto(
-            choices = listOfNotNull(choice)
+            choices = listOfNotNull(choice),
+            usage = usage
         )
     }
 }

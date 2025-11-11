@@ -37,7 +37,18 @@ data class ChatCompletionResponseDto(
     val `object`: String? = null,
     val created: Long? = null,
     val model: String? = null,
-    val choices: List<ChatCompletionChoiceDto> = emptyList()
+    val choices: List<ChatCompletionChoiceDto> = emptyList(),
+    val usage: ChatCompletionUsageDto? = null
+)
+
+@Serializable
+data class ChatCompletionUsageDto(
+    @SerialName("prompt_tokens")
+    val promptTokens: Int? = null,
+    @SerialName("completion_tokens")
+    val completionTokens: Int? = null,
+    @SerialName("total_tokens")
+    val totalTokens: Int? = null
 )
 
 @Serializable
