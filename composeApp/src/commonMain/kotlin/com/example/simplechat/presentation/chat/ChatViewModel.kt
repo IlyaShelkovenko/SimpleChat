@@ -3,6 +3,7 @@ package com.example.simplechat.presentation.chat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.simplechat.domain.model.ChatMessage
+import com.example.simplechat.domain.model.ChatResponse
 import com.example.simplechat.domain.model.MessageRole
 import com.example.simplechat.domain.usecase.SendPromptUseCase
 import kotlinx.coroutines.channels.Channel
@@ -55,11 +56,12 @@ class ChatViewModel(
 
         viewModelScope.launch {
             sendPromptUseCase(updatedHistory)
-                .onSuccess { assistantMessage ->
+                .onSuccess { response ->
                     _uiState.value = _uiState.value.copy(
-                        messages = _uiState.value.messages + assistantMessage,
+                        messages = _uiState.value.messages + response.message,
                         isLoading = false
                     )
+                    emitResponseInfo(response)
                 }
                 .onFailure { error ->
                     _uiState.value = _uiState.value.copy(
@@ -78,6 +80,14 @@ class ChatViewModel(
     private fun emitError(message: String) {
         viewModelScope.launch {
             _effects.send(ChatEffect.ShowError(message))
+        }
+    }
+
+    private fun emitResponseInfo(response: ChatResponse) {
+        val tokens = response.completionTokens ?: 0
+        val infoMessage = "Response time: ${response.durationMillis} ms · Tokens: $tokens"
+        viewModelScope.launch {
+            _effects.send(ChatEffect.ShowResponseInfo(infoMessage))
         }
     }
 }

@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -25,12 +25,17 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -38,7 +43,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.ui.unit.max
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.simplechat.domain.model.MessageRole
 import com.example.simplechat.presentation.app.SimpleChatViewModelFactory
@@ -50,18 +54,37 @@ fun ChatRoute(
     viewModel: ChatViewModel = viewModel(factory = SimpleChatViewModelFactory.chatViewModelFactory())
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(viewModel) {
-        viewModel.effects.collect { /* Could connect to snackbar host */ }
+        viewModel.effects.collect { effect ->
+            when (effect) {
+                is ChatEffect.ShowError -> snackbarHostState.showSnackbar(
+                    message = effect.message,
+                    withDismissAction = true
+                )
+
+                is ChatEffect.ShowResponseInfo -> snackbarHostState.showSnackbar(
+                    message = effect.message,
+                    duration = SnackbarDuration.Short
+                )
+            }
+        }
     }
 
-    ChatScreen(
-        state = uiState,
-        onPromptChanged = { viewModel.onEvent(ChatEvent.PromptChanged(it)) },
-        onSubmitPrompt = { viewModel.onEvent(ChatEvent.SubmitPrompt) },
-        onClearChat = { viewModel.onEvent(ChatEvent.ClearChat) },
-        onOpenSettings = onOpenSettings
-    )
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0f)
+    ) { padding ->
+        ChatScreen(
+            state = uiState,
+            onPromptChanged = { viewModel.onEvent(ChatEvent.PromptChanged(it)) },
+            onSubmitPrompt = { viewModel.onEvent(ChatEvent.SubmitPrompt) },
+            onClearChat = { viewModel.onEvent(ChatEvent.ClearChat) },
+            onOpenSettings = onOpenSettings,
+            contentPadding = padding
+        )
+    }
 }
 
 @Composable
@@ -70,7 +93,8 @@ fun ChatScreen(
     onPromptChanged: (String) -> Unit,
     onSubmitPrompt: () -> Unit,
     onClearChat: () -> Unit,
-    onOpenSettings: () -> Unit
+    onOpenSettings: () -> Unit,
+    contentPadding: PaddingValues = PaddingValues()
 ) {
     Box(
         modifier = Modifier
@@ -82,11 +106,12 @@ fun ChatScreen(
                         MaterialTheme.colorScheme.background
                     )
                 )
-            )
+        )
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(contentPadding)
                 .padding(horizontal = 20.dp, vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {

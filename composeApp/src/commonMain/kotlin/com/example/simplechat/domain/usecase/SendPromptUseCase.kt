@@ -1,6 +1,7 @@
 package com.example.simplechat.domain.usecase
 
 import com.example.simplechat.domain.model.ChatMessage
+import com.example.simplechat.domain.model.ChatResponse
 import com.example.simplechat.domain.repository.ChatRepository
 import com.example.simplechat.domain.repository.SettingsRepository
 
@@ -8,7 +9,7 @@ class SendPromptUseCase(
     private val chatRepository: ChatRepository,
     private val settingsRepository: SettingsRepository
 ) {
-    suspend operator fun invoke(history: List<ChatMessage>): Result<ChatMessage> {
+    suspend operator fun invoke(history: List<ChatMessage>): Result<ChatResponse> {
         if (history.isEmpty()) {
             return Result.failure(IllegalArgumentException("Conversation history is empty"))
         }
