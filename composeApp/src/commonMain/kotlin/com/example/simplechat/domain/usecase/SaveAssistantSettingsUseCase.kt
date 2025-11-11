@@ -9,13 +9,15 @@ class SaveAssistantSettingsUseCase(
         useCustomSystemPrompt: Boolean,
         customSystemPrompt: String,
         useJsonFormat: Boolean,
-        temperature: Double
+        temperature: Double,
+        model: String
     ) {
         settingsRepository.saveAssistantSettings(
             useCustomSystemPrompt = useCustomSystemPrompt,
             customSystemPrompt = customSystemPrompt,
             useJsonFormat = useJsonFormat,
-            temperature = temperature
+            temperature = temperature,
+            model = model
         )
     }
 }

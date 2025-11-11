@@ -2,10 +2,10 @@ package com.example.simplechat.domain.usecase
 
 import com.example.simplechat.domain.repository.SettingsRepository
 
-class SaveYandexCredentialsUseCase(
+class SaveApiCredentialsUseCase(
     private val settingsRepository: SettingsRepository
 ) {
-    suspend operator fun invoke(apiKey: String, folderId: String) {
-        settingsRepository.saveCredentials(apiKey, folderId)
+    suspend operator fun invoke(apiKey: String) {
+        settingsRepository.saveApiKey(apiKey)
     }
 }

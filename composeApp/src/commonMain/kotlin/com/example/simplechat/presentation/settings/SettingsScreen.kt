@@ -22,12 +22,12 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.menuAnchor
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.menuAnchor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -35,6 +35,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.simplechat.presentation.app.SimpleChatViewModelFactory
@@ -50,6 +51,8 @@ fun SettingsRoute(
     SettingsScreen(
         state = uiState,
         onBack = onBack,
+        onApiKeyChanged = { viewModel.onEvent(SettingsEvent.ApiKeyChanged(it)) },
+        onModelChanged = { viewModel.onEvent(SettingsEvent.ModelChanged(it)) },
         onPromptChanged = { viewModel.onEvent(SettingsEvent.CustomSystemPromptChanged(it)) },
         onCustomToggleChanged = { viewModel.onEvent(SettingsEvent.CustomSystemPromptEnabledChanged(it)) },
         onJsonToggleChanged = { viewModel.onEvent(SettingsEvent.JsonFormatEnabledChanged(it)) },
@@ -63,6 +66,8 @@ fun SettingsRoute(
 fun SettingsScreen(
     state: SettingsUiState,
     onBack: () -> Unit,
+    onApiKeyChanged: (String) -> Unit,
+    onModelChanged: (String) -> Unit,
     onPromptChanged: (String) -> Unit,
     onCustomToggleChanged: (Boolean) -> Unit,
     onJsonToggleChanged: (Boolean) -> Unit,
@@ -71,6 +76,7 @@ fun SettingsScreen(
 ) {
     val temperatureOptions = listOf(0.0, 0.3, 0.7, 1.0)
     var isTemperatureMenuExpanded by remember { mutableStateOf(false) }
+    var isModelMenuExpanded by remember { mutableStateOf(false) }
     val selectedTemperatureText = remember(state.temperature) { state.temperature.toTemperatureDisplay() }
 
     Column(
@@ -109,6 +115,66 @@ fun SettingsScreen(
                     .padding(20.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "API key",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    OutlinedTextField(
+                        value = state.apiKey,
+                        onValueChange = onApiKeyChanged,
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        visualTransformation = PasswordVisualTransformation(),
+                        placeholder = { Text("Enter your Hugging Face token") }
+                    )
+                }
+
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "Model",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    ExposedDropdownMenuBox(
+                        expanded = isModelMenuExpanded,
+                        onExpandedChange = { isModelMenuExpanded = !isModelMenuExpanded }
+                    ) {
+                        OutlinedTextField(
+                            value = state.selectedModel,
+                            onValueChange = {},
+                            modifier = Modifier
+                                .menuAnchor()
+                                .fillMaxWidth(),
+                            readOnly = true,
+                            trailingIcon = {
+                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = isModelMenuExpanded)
+                            }
+                        )
+                        ExposedDropdownMenu(
+                            expanded = isModelMenuExpanded,
+                            onDismissRequest = { isModelMenuExpanded = false }
+                        ) {
+                            state.availableModels.forEach { model ->
+                                DropdownMenuItem(
+                                    text = { Text(model) },
+                                    onClick = {
+                                        isModelMenuExpanded = false
+                                        onModelChanged(model)
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -218,6 +284,23 @@ fun SettingsScreen(
                     enabled = state.isCustomPromptEnabled,
                     singleLine = false,
                 )
+
+                state.errorMessage?.let { message ->
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                            contentColor = MaterialTheme.colorScheme.onErrorContainer
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(
+                            text = message,
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+                        )
+                    }
+                }
 
                 if (state.isSaved) {
                     Card(
