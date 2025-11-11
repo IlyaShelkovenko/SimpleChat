@@ -28,6 +28,7 @@ class SendPromptUseCase(
             credentials.folderId,
             systemPrompt,
             requestJson = assistantSettings.isJsonFormatEnabled,
+            temperature = assistantSettings.temperature,
             history = history
         )
     }

@@ -8,6 +8,7 @@ interface ChatRepository {
         folderId: String,
         systemPrompt: String?,
         requestJson: Boolean,
+        temperature: Double,
         history: List<ChatMessage>
     ): Result<ChatMessage>
 }
