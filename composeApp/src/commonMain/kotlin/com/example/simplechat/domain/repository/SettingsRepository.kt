@@ -11,7 +11,8 @@ interface SettingsRepository {
     suspend fun saveAssistantSettings(
         useCustomSystemPrompt: Boolean,
         customSystemPrompt: String,
-        useJsonFormat: Boolean
+        useJsonFormat: Boolean,
+        temperature: Double
     )
     suspend fun getAssistantSettings(): AssistantSettings
     fun observeAssistantSettings(): Flow<AssistantSettings>

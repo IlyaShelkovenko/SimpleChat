@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -22,6 +23,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -36,6 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.ui.unit.max
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.simplechat.domain.model.MessageRole
 import com.example.simplechat.presentation.app.SimpleChatViewModelFactory
@@ -56,6 +59,7 @@ fun ChatRoute(
         state = uiState,
         onPromptChanged = { viewModel.onEvent(ChatEvent.PromptChanged(it)) },
         onSubmitPrompt = { viewModel.onEvent(ChatEvent.SubmitPrompt) },
+        onClearChat = { viewModel.onEvent(ChatEvent.ClearChat) },
         onOpenSettings = onOpenSettings
     )
 }
@@ -65,6 +69,7 @@ fun ChatScreen(
     state: ChatUiState,
     onPromptChanged: (String) -> Unit,
     onSubmitPrompt: () -> Unit,
+    onClearChat: () -> Unit,
     onOpenSettings: () -> Unit
 ) {
     Box(
@@ -113,6 +118,8 @@ fun ChatScreen(
                 }
             }
 
+            val listState = rememberLazyListState()
+
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -138,10 +145,17 @@ fun ChatScreen(
                         )
                     }
                 } else {
+                    LaunchedEffect(state.messages.size) {
+                        if (state.messages.isNotEmpty()) {
+                            listState.animateScrollToItem(state.messages.lastIndex)
+                        }
+                    }
+
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        state = listState
                     ) {
                         items(state.messages, key = { it.id }) { message ->
                             ChatMessageBubble(
@@ -177,6 +191,7 @@ fun ChatScreen(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         },
+                        maxLines = 10,
                         enabled = !state.isLoading,
                         shape = RoundedCornerShape(20.dp),
                         colors = TextFieldDefaults.colors(
@@ -193,20 +208,6 @@ fun ChatScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        AnimatedVisibility(visible = state.isLoading) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                CircularProgressIndicator(modifier = Modifier.height(32.dp))
-                                Text(
-                                    text = "Thinking...",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-
                         Button(
                             onClick = onSubmitPrompt,
                             enabled = state.prompt.isNotBlank() && !state.isLoading,
@@ -217,6 +218,33 @@ fun ChatScreen(
                             )
                         ) {
                             Text("Send")
+                        }
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            AnimatedVisibility(visible = state.isLoading) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    CircularProgressIndicator(modifier = Modifier.height(32.dp))
+                                    Text(
+                                        text = "Thinking...",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+
+                            OutlinedButton(
+                                onClick = onClearChat,
+                                enabled = state.messages.isNotEmpty() && !state.isLoading,
+                                shape = RoundedCornerShape(18.dp)
+                            ) {
+                                Text("Clear")
+                            }
                         }
                     }
                 }

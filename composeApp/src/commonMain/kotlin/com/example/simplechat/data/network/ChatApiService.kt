@@ -23,22 +23,24 @@ class ChatApiService(
     suspend fun sendPrompt(
         apiKey: String,
         folderId: String,
-        prompt: String,
         systemPrompt: String?,
-        requestJson: Boolean
+        requestJson: Boolean,
+        temperature: Double,
+        messages: List<YandexMessageDto>
     ): YandexCompletionResponse {
         val resolvedSystemPrompt = systemPrompt?.takeIf { it.isNotBlank() } ?: DEFAULT_SYSTEM_PROMPT
+        val requestMessages = buildList {
+            add(YandexMessageDto(role = "system", text = resolvedSystemPrompt))
+            addAll(messages)
+        }
         val request = YandexCompletionRequest(
             modelUri = "gpt://$folderId/$model/latest",
             completionOptions = YandexCompletionOptions(
                 stream = false,
-                temperature = 0.7,
+                temperature = temperature,
                 maxTokens = null
             ),
-            messages = listOf(
-                YandexMessageDto(role = "system", text = resolvedSystemPrompt),
-                YandexMessageDto(role = "user", text = prompt)
-            ),
+            messages = requestMessages,
             jsonObject = if (requestJson) true else null
         )
 

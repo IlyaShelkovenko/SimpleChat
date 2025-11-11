@@ -18,6 +18,8 @@ private const val FOLDER_ID_STORAGE_KEY = "ai_folder_id"
 private const val CUSTOM_PROMPT_STORAGE_KEY = "assistant_custom_prompt"
 private const val CUSTOM_PROMPT_ENABLED_STORAGE_KEY = "assistant_custom_prompt_enabled"
 private const val JSON_FORMAT_ENABLED_STORAGE_KEY = "assistant_json_format_enabled"
+private const val TEMPERATURE_STORAGE_KEY = "assistant_temperature"
+private const val DEFAULT_TEMPERATURE = 0.7
 
 class SettingsRepositoryImpl(
     private val secureStorage: SecureStorage,
@@ -41,10 +43,12 @@ class SettingsRepositoryImpl(
             val isEnabled = secureStorage.read(CUSTOM_PROMPT_ENABLED_STORAGE_KEY)?.toBooleanStrictOrNull() ?: false
             val prompt = secureStorage.read(CUSTOM_PROMPT_STORAGE_KEY).orEmpty()
             val isJsonFormatEnabled = secureStorage.read(JSON_FORMAT_ENABLED_STORAGE_KEY)?.toBooleanStrictOrNull() ?: false
+            val temperature = secureStorage.read(TEMPERATURE_STORAGE_KEY)?.toDoubleOrNull() ?: DEFAULT_TEMPERATURE
             _assistantSettingsState.value = AssistantSettings(
                 customSystemPrompt = prompt,
                 isCustomPromptEnabled = isEnabled,
-                isJsonFormatEnabled = isJsonFormatEnabled
+                isJsonFormatEnabled = isJsonFormatEnabled,
+                temperature = temperature
             )
         }
     }
@@ -76,15 +80,18 @@ class SettingsRepositoryImpl(
     override suspend fun saveAssistantSettings(
         useCustomSystemPrompt: Boolean,
         customSystemPrompt: String,
-        useJsonFormat: Boolean
+        useJsonFormat: Boolean,
+        temperature: Double
     ) {
         secureStorage.write(CUSTOM_PROMPT_ENABLED_STORAGE_KEY, useCustomSystemPrompt.toString())
         secureStorage.write(CUSTOM_PROMPT_STORAGE_KEY, customSystemPrompt)
         secureStorage.write(JSON_FORMAT_ENABLED_STORAGE_KEY, useJsonFormat.toString())
+        secureStorage.write(TEMPERATURE_STORAGE_KEY, temperature.toString())
         _assistantSettingsState.value = AssistantSettings(
             customSystemPrompt = customSystemPrompt,
             isCustomPromptEnabled = useCustomSystemPrompt,
-            isJsonFormatEnabled = useJsonFormat
+            isJsonFormatEnabled = useJsonFormat,
+            temperature = temperature
         )
     }
 
@@ -95,10 +102,12 @@ class SettingsRepositoryImpl(
         val isEnabled = secureStorage.read(CUSTOM_PROMPT_ENABLED_STORAGE_KEY)?.toBooleanStrictOrNull() ?: false
         val prompt = secureStorage.read(CUSTOM_PROMPT_STORAGE_KEY).orEmpty()
         val isJsonFormatEnabled = secureStorage.read(JSON_FORMAT_ENABLED_STORAGE_KEY)?.toBooleanStrictOrNull() ?: false
+        val temperature = secureStorage.read(TEMPERATURE_STORAGE_KEY)?.toDoubleOrNull() ?: DEFAULT_TEMPERATURE
         return AssistantSettings(
             customSystemPrompt = prompt,
             isCustomPromptEnabled = isEnabled,
-            isJsonFormatEnabled = isJsonFormatEnabled
+            isJsonFormatEnabled = isJsonFormatEnabled,
+            temperature = temperature
         ).also { settings ->
             _assistantSettingsState.value = settings
         }

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,7 +16,13 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExposedDropdownMenu
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.menuAnchor
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -24,11 +31,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.simplechat.presentation.app.SimpleChatViewModelFactory
+import kotlin.math.roundToInt
 
 @Composable
 fun SettingsRoute(
@@ -43,10 +53,12 @@ fun SettingsRoute(
         onPromptChanged = { viewModel.onEvent(SettingsEvent.CustomSystemPromptChanged(it)) },
         onCustomToggleChanged = { viewModel.onEvent(SettingsEvent.CustomSystemPromptEnabledChanged(it)) },
         onJsonToggleChanged = { viewModel.onEvent(SettingsEvent.JsonFormatEnabledChanged(it)) },
+        onTemperatureChanged = { viewModel.onEvent(SettingsEvent.TemperatureChanged(it)) },
         onSave = { viewModel.onEvent(SettingsEvent.Save) }
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     state: SettingsUiState,
@@ -54,8 +66,13 @@ fun SettingsScreen(
     onPromptChanged: (String) -> Unit,
     onCustomToggleChanged: (Boolean) -> Unit,
     onJsonToggleChanged: (Boolean) -> Unit,
+    onTemperatureChanged: (Double) -> Unit,
     onSave: () -> Unit
 ) {
+    val temperatureOptions = listOf(0.0, 0.3, 0.7, 1.0)
+    var isTemperatureMenuExpanded by remember { mutableStateOf(false) }
+    val selectedTemperatureText = remember(state.temperature) { state.temperature.toTemperatureDisplay() }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -82,7 +99,7 @@ fun SettingsScreen(
         }
 
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxSize(),
             shape = RoundedCornerShape(24.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
@@ -140,12 +157,58 @@ fun SettingsScreen(
                     )
                 }
 
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "Temperature",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = "Adjust response creativity (higher values are more random).",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    ExposedDropdownMenuBox(
+                        expanded = isTemperatureMenuExpanded,
+                        onExpandedChange = { isTemperatureMenuExpanded = !isTemperatureMenuExpanded }
+                    ) {
+                        OutlinedTextField(
+                            value = selectedTemperatureText,
+                            onValueChange = {},
+                            modifier = Modifier
+                                .menuAnchor()
+                                .fillMaxWidth(),
+                            readOnly = true,
+                            trailingIcon = {
+                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = isTemperatureMenuExpanded)
+                            }
+                        )
+                        ExposedDropdownMenu(
+                            expanded = isTemperatureMenuExpanded,
+                            onDismissRequest = { isTemperatureMenuExpanded = false }
+                        ) {
+                            temperatureOptions.forEach { option ->
+                                DropdownMenuItem(
+                                    text = { Text(option.toTemperatureDisplay()) },
+                                    onClick = {
+                                        isTemperatureMenuExpanded = false
+                                        onTemperatureChanged(option)
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+
                 OutlinedTextField(
                     value = state.customSystemPrompt,
                     onValueChange = onPromptChanged,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(160.dp),
+                        .fillMaxHeight()
+                        .weight(1f),
                     placeholder = {
                         Text(
                             "e.g. Reply using bullet points and include a summary at the end.",
@@ -154,7 +217,6 @@ fun SettingsScreen(
                     },
                     enabled = state.isCustomPromptEnabled,
                     singleLine = false,
-                    minLines = 4
                 )
 
                 if (state.isSaved) {
@@ -186,4 +248,9 @@ fun SettingsScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
     }
+}
+
+private fun Double.toTemperatureDisplay(): String {
+    val normalized = ((this * 10.0).roundToInt() / 10.0)
+    return normalized.toString()
 }

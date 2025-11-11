@@ -46,6 +46,13 @@ class SettingsViewModel(
                 )
             }
 
+            is SettingsEvent.TemperatureChanged -> updateState {
+                copy(
+                    temperature = event.value,
+                    isSaved = false
+                )
+            }
+
             SettingsEvent.Save -> saveSettings()
         }
     }
@@ -58,7 +65,8 @@ class SettingsViewModel(
                     copy(
                         customSystemPrompt = settings.customSystemPrompt,
                         isCustomPromptEnabled = settings.isCustomPromptEnabled,
-                        isJsonFormatEnabled = settings.isJsonFormatEnabled
+                        isJsonFormatEnabled = settings.isJsonFormatEnabled,
+                        temperature = settings.temperature
                     )
                 }
             }
@@ -73,7 +81,8 @@ class SettingsViewModel(
             saveAssistantSettingsUseCase(
                 useCustomSystemPrompt = currentState.isCustomPromptEnabled,
                 customSystemPrompt = currentState.customSystemPrompt,
-                useJsonFormat = currentState.isJsonFormatEnabled
+                useJsonFormat = currentState.isJsonFormatEnabled,
+                temperature = currentState.temperature
             )
             updateState { copy(isSaving = false, isSaved = true) }
         }

@@ -12,6 +12,7 @@ data class ChatUiState(
 sealed interface ChatEvent {
     data class PromptChanged(val value: String) : ChatEvent
     data object SubmitPrompt : ChatEvent
+    data object ClearChat : ChatEvent
 }
 
 sealed interface ChatEffect {

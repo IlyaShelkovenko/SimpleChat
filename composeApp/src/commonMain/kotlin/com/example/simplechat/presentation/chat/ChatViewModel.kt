@@ -29,6 +29,7 @@ class ChatViewModel(
             )
 
             ChatEvent.SubmitPrompt -> submitPrompt()
+            ChatEvent.ClearChat -> clearChat()
         }
     }
 
@@ -39,19 +40,21 @@ class ChatViewModel(
             return
         }
 
+        val history = _uiState.value.messages
         val userMessage = ChatMessage(
             role = MessageRole.USER,
             content = prompt
         )
+        val updatedHistory = history + userMessage
         _uiState.value = _uiState.value.copy(
-            messages = _uiState.value.messages + userMessage,
+            messages = updatedHistory,
             prompt = "",
             isLoading = true,
             errorMessage = null
         )
 
         viewModelScope.launch {
-            sendPromptUseCase(prompt)
+            sendPromptUseCase(updatedHistory)
                 .onSuccess { assistantMessage ->
                     _uiState.value = _uiState.value.copy(
                         messages = _uiState.value.messages + assistantMessage,
@@ -66,6 +69,10 @@ class ChatViewModel(
                     emitError(error.message ?: "Unable to get response")
                 }
         }
+    }
+
+    private fun clearChat() {
+        _uiState.value = ChatUiState()
     }
 
     private fun emitError(message: String) {
