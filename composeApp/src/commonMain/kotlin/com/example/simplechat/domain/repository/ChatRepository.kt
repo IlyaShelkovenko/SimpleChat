@@ -1,14 +1,15 @@
 package com.example.simplechat.domain.repository
 
 import com.example.simplechat.domain.model.ChatMessage
+import com.example.simplechat.domain.model.ChatResponse
 
 interface ChatRepository {
     suspend fun sendPrompt(
         apiKey: String,
-        folderId: String,
         systemPrompt: String?,
         requestJson: Boolean,
         temperature: Double,
+        model: String,
         history: List<ChatMessage>
-    ): Result<ChatMessage>
+    ): Result<ChatResponse>
 }

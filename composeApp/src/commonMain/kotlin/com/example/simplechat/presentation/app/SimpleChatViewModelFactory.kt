@@ -10,13 +10,13 @@ import com.example.simplechat.presentation.settings.SettingsViewModel
 object SimpleChatViewModelFactory {
     fun appViewModelFactory() = viewModelFactory {
         initializer {
-            AppViewModel(AppGraph.observeYandexCredentialsUseCase)
+            AppViewModel(AppGraph.observeApiCredentialsUseCase)
         }
     }
 
     fun apiKeyViewModelFactory() = viewModelFactory {
         initializer {
-            ApiKeyViewModel(AppGraph.saveYandexCredentialsUseCase)
+            ApiKeyViewModel(AppGraph.saveApiCredentialsUseCase)
         }
     }
 
@@ -30,7 +30,9 @@ object SimpleChatViewModelFactory {
         initializer {
             SettingsViewModel(
                 observeAssistantSettingsUseCase = AppGraph.observeAssistantSettingsUseCase,
-                saveAssistantSettingsUseCase = AppGraph.saveAssistantSettingsUseCase
+                saveAssistantSettingsUseCase = AppGraph.saveAssistantSettingsUseCase,
+                observeApiCredentialsUseCase = AppGraph.observeApiCredentialsUseCase,
+                saveApiCredentialsUseCase = AppGraph.saveApiCredentialsUseCase
             )
         }
     }
