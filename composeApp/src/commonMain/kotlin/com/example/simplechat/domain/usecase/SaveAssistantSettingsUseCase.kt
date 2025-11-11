@@ -8,12 +8,14 @@ class SaveAssistantSettingsUseCase(
     suspend operator fun invoke(
         useCustomSystemPrompt: Boolean,
         customSystemPrompt: String,
-        useJsonFormat: Boolean
+        useJsonFormat: Boolean,
+        temperature: Double
     ) {
         settingsRepository.saveAssistantSettings(
             useCustomSystemPrompt = useCustomSystemPrompt,
             customSystemPrompt = customSystemPrompt,
-            useJsonFormat = useJsonFormat
+            useJsonFormat = useJsonFormat,
+            temperature = temperature
         )
     }
 }

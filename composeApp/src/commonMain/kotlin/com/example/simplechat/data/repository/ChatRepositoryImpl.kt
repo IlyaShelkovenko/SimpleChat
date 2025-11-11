@@ -14,6 +14,7 @@ class ChatRepositoryImpl(
         folderId: String,
         systemPrompt: String?,
         requestJson: Boolean,
+        temperature: Double,
         history: List<ChatMessage>
     ): Result<ChatMessage> = runCatching {
         val conversation = buildList {
@@ -26,6 +27,7 @@ class ChatRepositoryImpl(
             folderId = folderId,
             systemPrompt = systemPrompt,
             requestJson = requestJson,
+            temperature = temperature,
             messages = conversation
         )
         val content = response.result?.alternatives?.firstOrNull()?.message?.text

@@ -25,6 +25,7 @@ class ChatApiService(
         folderId: String,
         systemPrompt: String?,
         requestJson: Boolean,
+        temperature: Double,
         messages: List<YandexMessageDto>
     ): YandexCompletionResponse {
         val resolvedSystemPrompt = systemPrompt?.takeIf { it.isNotBlank() } ?: DEFAULT_SYSTEM_PROMPT
@@ -36,7 +37,7 @@ class ChatApiService(
             modelUri = "gpt://$folderId/$model/latest",
             completionOptions = YandexCompletionOptions(
                 stream = false,
-                temperature = 0.7,
+                temperature = temperature,
                 maxTokens = null
             ),
             messages = requestMessages,
