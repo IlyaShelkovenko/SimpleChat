@@ -8,6 +8,6 @@ data class AssistantSettings(
     val model: String = DEFAULT_MODEL
 ) {
     companion object {
-        const val DEFAULT_MODEL: String = "Sao10K/L3-8B-Stheno-v3.2"
+        const val DEFAULT_MODEL: String = "deepseek-ai/DeepSeek-R1"
     }
 }

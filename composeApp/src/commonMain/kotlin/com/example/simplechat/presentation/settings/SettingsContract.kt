@@ -4,7 +4,11 @@ import com.example.simplechat.domain.model.AssistantSettings
 
 data class SettingsUiState(
     val apiKey: String = "",
-    val availableModels: List<String> = listOf(AssistantSettings.DEFAULT_MODEL),
+    val availableModels: List<String> = listOf(
+        AssistantSettings.DEFAULT_MODEL,
+        "Qwen/Qwen2.5-VL-7B-Instruct",
+        "Sao10K/L3-8B-Stheno-v3.2",
+    ),
     val selectedModel: String = AssistantSettings.DEFAULT_MODEL,
     val customSystemPrompt: String = "",
     val isCustomPromptEnabled: Boolean = false,
