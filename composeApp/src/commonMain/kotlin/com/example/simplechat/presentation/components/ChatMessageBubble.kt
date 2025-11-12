@@ -2,6 +2,7 @@ package com.example.simplechat.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,13 +16,15 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.simplechat.domain.model.ChatMessage
+import com.example.simplechat.domain.model.MessageRole
 
 @Composable
 fun ChatMessageBubble(
-    message: String,
-    isUser: Boolean,
+    message: ChatMessage,
     modifier: Modifier = Modifier
 ) {
+    val isUser = message.role == MessageRole.USER
     val bubbleBrush = if (isUser) {
         Brush.horizontalGradient(
             colors = listOf(
@@ -56,13 +59,29 @@ fun ChatMessageBubble(
                 .background(bubbleBrush)
                 .padding(horizontal = 18.dp, vertical = 14.dp)
         ) {
-            Text(
-                text = message,
-                style = MaterialTheme.typography.bodyLarge,
-                color = textColor,
-                textAlign = TextAlign.Start,
-                lineHeight = MaterialTheme.typography.bodyLarge.lineHeight
-            )
+            Column(
+                horizontalAlignment = if (isUser) Alignment.End else Alignment.Start
+            ) {
+                Text(
+                    text = message.content,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = textColor,
+                    textAlign = TextAlign.Start,
+                    lineHeight = MaterialTheme.typography.bodyLarge.lineHeight
+                )
+                if (!isUser) {
+                    val promptTokens = message.promptTokens ?: 0
+                    val completionTokens = message.completionTokens ?: 0
+                    val totalTokens = message.totalTokens ?: (promptTokens + completionTokens)
+                    Text(
+                        text = "Tokens: in - $promptTokens out - $completionTokens total - $totalTokens",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.padding(top = 6.dp)
+                    )
+                }
+            }
         }
     }
 }

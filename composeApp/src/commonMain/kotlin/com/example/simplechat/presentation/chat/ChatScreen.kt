@@ -44,7 +44,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.simplechat.domain.model.MessageRole
 import com.example.simplechat.presentation.app.SimpleChatViewModelFactory
 import com.example.simplechat.presentation.components.ChatMessageBubble
 
@@ -115,32 +114,32 @@ fun ChatScreen(
                 .padding(horizontal = 20.dp, vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = "Aurora Chat",
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.onBackground
                     )
-                    Text(
-                        text = "A calmer space to think, ideate, and explore your ideas.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
-                    )
+                    IconButton(onClick = onOpenSettings) {
+                        Icon(
+                            imageVector = Icons.Outlined.Settings,
+                            contentDescription = "Open settings",
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
                 }
-                IconButton(onClick = onOpenSettings) {
-                    Icon(
-                        imageVector = Icons.Outlined.Settings,
-                        contentDescription = "Open settings",
-                        tint = MaterialTheme.colorScheme.onBackground
-                    )
-                }
+                Text(
+                    text = "Total usage: ${state.totalTokensUsed}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
 
             val listState = rememberLazyListState()
@@ -184,8 +183,7 @@ fun ChatScreen(
                     ) {
                         items(state.messages, key = { it.id }) { message ->
                             ChatMessageBubble(
-                                message = message.content,
-                                isUser = message.role == MessageRole.USER
+                                message = message
                             )
                         }
                     }

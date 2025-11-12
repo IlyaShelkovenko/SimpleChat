@@ -12,5 +12,8 @@ data class ChatMessage @OptIn(ExperimentalTime::class) constructor(
     val id: String = "msg_${System.now().toEpochMilliseconds()}",
     val role: MessageRole,
     val content: String,
-    val createdAt: Long = System.now().toEpochMilliseconds()
+    val createdAt: Long = System.now().toEpochMilliseconds(),
+    val promptTokens: Int? = null,
+    val completionTokens: Int? = null,
+    val totalTokens: Int? = null
 )
