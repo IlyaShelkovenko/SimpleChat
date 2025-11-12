@@ -57,11 +57,37 @@ class ChatViewModel(
         viewModelScope.launch {
             sendPromptUseCase(updatedHistory)
                 .onSuccess { response ->
-                    _uiState.value = _uiState.value.copy(
-                        messages = _uiState.value.messages + response.message,
-                        isLoading = false
+                    val promptTokens = response.promptTokens ?: estimateTokens(userMessage.content)
+                    val completionTokens = response.completionTokens ?: estimateTokens(response.message.content)
+                    val totalTokens = response.totalTokens ?: (promptTokens + completionTokens)
+
+                    val updatedMessages = _uiState.value.messages.map { message ->
+                        if (message.id == userMessage.id) {
+                            message.copy(promptTokens = promptTokens)
+                        } else {
+                            message
+                        }
+                    }
+
+                    val assistantMessage = response.message.copy(
+                        promptTokens = promptTokens,
+                        completionTokens = completionTokens,
+                        totalTokens = totalTokens
                     )
-                    emitResponseInfo(response)
+
+                    val responseForInfo = response.copy(
+                        message = assistantMessage,
+                        promptTokens = promptTokens,
+                        completionTokens = completionTokens,
+                        totalTokens = totalTokens
+                    )
+
+                    _uiState.value = _uiState.value.copy(
+                        messages = updatedMessages + assistantMessage,
+                        isLoading = false,
+                        totalTokensUsed = _uiState.value.totalTokensUsed + totalTokens
+                    )
+                    emitResponseInfo(responseForInfo)
                 }
                 .onFailure { error ->
                     _uiState.value = _uiState.value.copy(
@@ -89,5 +115,10 @@ class ChatViewModel(
         viewModelScope.launch {
             _effects.send(ChatEffect.ShowResponseInfo(infoMessage))
         }
+    }
+
+    private fun estimateTokens(content: String): Int {
+        if (content.isBlank()) return 0
+        return content.trim().split(Regex("\\s+")).size
     }
 }
