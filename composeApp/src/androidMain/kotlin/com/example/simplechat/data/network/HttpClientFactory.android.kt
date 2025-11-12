@@ -17,9 +17,9 @@ actual fun createHttpClient(): HttpClient = HttpClient(OkHttp) {
         level = LogLevel.INFO
     }
     install(HttpTimeout) {
-        requestTimeoutMillis = 60_000   // 60 seconds
-        connectTimeoutMillis = 60_000   // 60 seconds
-        socketTimeoutMillis = 60_000    // 60 seconds
+        requestTimeoutMillis = 100_000   // 60 seconds
+        connectTimeoutMillis = 100_000   // 60 seconds
+        socketTimeoutMillis = 100_000    // 60 seconds
     }
     install(ContentNegotiation) {
         json(

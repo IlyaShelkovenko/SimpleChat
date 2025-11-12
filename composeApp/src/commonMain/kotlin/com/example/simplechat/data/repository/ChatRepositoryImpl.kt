@@ -37,14 +37,24 @@ class ChatRepositoryImpl(
         val durationMillis = mark.elapsedNow().inWholeMilliseconds
         val content = response.choices.firstOrNull()?.message?.content
             ?: throw IllegalStateException("Empty response from assistant")
+        val usage = response.usage
+        val trimmedContent = content.trim()
+        val completionTokens = usage?.completionTokens ?: estimateTokens(trimmedContent)
+        val promptTokens = usage?.promptTokens
+        val totalTokens = usage?.totalTokens
         val assistantMessage = ChatMessage(
             role = MessageRole.ASSISTANT,
-            content = content.trim()
+            content = trimmedContent,
+            promptTokens = promptTokens,
+            completionTokens = completionTokens,
+            totalTokens = totalTokens
         )
         ChatResponse(
             message = assistantMessage,
             durationMillis = durationMillis,
-            completionTokens = response.usage?.completionTokens ?: estimateTokens(assistantMessage.content)
+            promptTokens = promptTokens,
+            completionTokens = completionTokens,
+            totalTokens = totalTokens
         )
     }
 

@@ -6,7 +6,8 @@ data class ChatUiState(
     val messages: List<ChatMessage> = emptyList(),
     val prompt: String = "",
     val isLoading: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val totalTokensUsed: Int = 0
 )
 
 sealed interface ChatEvent {
