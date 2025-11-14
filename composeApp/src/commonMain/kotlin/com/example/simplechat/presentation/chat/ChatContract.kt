@@ -19,4 +19,5 @@ sealed interface ChatEvent {
 sealed interface ChatEffect {
     data class ShowError(val message: String) : ChatEffect
     data class ShowResponseInfo(val message: String) : ChatEffect
+    data class ShowCompressionInfo(val message: String) : ChatEffect
 }
