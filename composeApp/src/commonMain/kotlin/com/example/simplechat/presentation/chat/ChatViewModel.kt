@@ -54,8 +54,10 @@ class ChatViewModel(
         val updatedHistory = history + userMessage
         val summaryMessage = compressedSummary
         val historyForRequest = buildList {
-            summaryMessage?.let { add(it) }
-            addAll(updatedHistory)
+            summaryMessage?.let {
+                add(it)
+                add(userMessage)
+            } ?: addAll(updatedHistory)
         }
         _uiState.value = _uiState.value.copy(
             messages = updatedHistory,
@@ -198,7 +200,6 @@ class ChatViewModel(
     private companion object {
         const val COMPRESSION_INTERVAL = 10
         const val COMPRESSION_PROMPT =
-            "summarize this dialog messages and compress it, leave all important information " +
-                "and vector of main goal of this dialog"
+            "Обобщите сообщения этого диалога и сожмите их, оставив всю важную информацию и вектор основной цели этого диалога"
     }
 }
