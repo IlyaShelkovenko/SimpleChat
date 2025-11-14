@@ -67,6 +67,11 @@ fun ChatRoute(
                     message = effect.message,
                     duration = SnackbarDuration.Short
                 )
+
+                is ChatEffect.ShowCompressionInfo -> snackbarHostState.showSnackbar(
+                    message = effect.message,
+                    duration = SnackbarDuration.Short
+                )
             }
         }
     }
