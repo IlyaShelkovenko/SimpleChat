@@ -47,6 +47,11 @@ class SummaryHistoryRepositoryImpl(
 
     override fun observeSummaryHistory() = historyFlow.asStateFlow()
 
+    override suspend fun clearHistory() {
+        historyFlow.value = emptyList()
+        secureStorage.remove(HISTORY_KEY)
+    }
+
     private suspend fun persist(history: List<ConversationSummary>) {
         secureStorage.write(HISTORY_KEY, json.encodeToString(history))
     }
