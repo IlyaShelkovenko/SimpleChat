@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -34,6 +35,7 @@ import com.example.simplechat.presentation.app.SimpleChatViewModelFactory
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.ExperimentalTime
 
 @Composable
 fun HistoryRoute(
@@ -48,6 +50,7 @@ fun HistoryRoute(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryScreen(
     state: HistoryUiState,
@@ -106,12 +109,13 @@ fun HistoryScreen(
     }
 }
 
+@OptIn(ExperimentalTime::class)
 @Composable
 private fun SummaryCard(summary: ConversationSummary) {
     val dateTime = Instant.fromEpochMilliseconds(summary.timestampMillis)
         .toLocalDateTime(TimeZone.currentSystemDefault())
     val dateText = "${dateTime.date}"
-    val timeText = "%02d:%02d".format(dateTime.hour, dateTime.minute)
+    val timeText = "${dateTime.hour}:${dateTime.minute}"
 
     Card(
         modifier = Modifier.fillMaxWidth(),

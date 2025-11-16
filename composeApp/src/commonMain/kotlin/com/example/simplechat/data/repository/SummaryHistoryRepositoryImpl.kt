@@ -9,11 +9,12 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.random.Random
+import kotlin.time.ExperimentalTime
 
 class SummaryHistoryRepositoryImpl(
     private val secureStorage: SecureStorage,
@@ -32,6 +33,7 @@ class SummaryHistoryRepositoryImpl(
         }
     }
 
+    @OptIn(ExperimentalTime::class)
     override suspend fun saveSummary(summary: String) {
         val trimmed = summary.trim()
         if (trimmed.isEmpty()) return
@@ -63,6 +65,7 @@ class SummaryHistoryRepositoryImpl(
         }.getOrDefault(emptyList())
     }
 
+    @OptIn(ExperimentalTime::class)
     private fun generateId(): String {
         val time = Clock.System.now().toEpochMilliseconds()
         val random = Random.nextInt(0, Int.MAX_VALUE)
