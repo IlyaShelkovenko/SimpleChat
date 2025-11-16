@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.simplechat.domain.model.ChatMessage
 import com.example.simplechat.domain.model.ChatResponse
 import com.example.simplechat.domain.model.MessageRole
+import com.example.simplechat.domain.usecase.SaveSummaryUseCase
 import com.example.simplechat.domain.usecase.SendPromptUseCase
 import kotlin.collections.buildList
 import kotlinx.coroutines.channels.Channel
@@ -15,7 +16,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class ChatViewModel(
-    private val sendPromptUseCase: SendPromptUseCase
+    private val sendPromptUseCase: SendPromptUseCase,
+    private val saveSummaryUseCase: SaveSummaryUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ChatUiState())
     val uiState: StateFlow<ChatUiState> = _uiState.asStateFlow()
@@ -182,6 +184,7 @@ class ChatViewModel(
                             totalTokensUsed = _uiState.value.totalTokensUsed + totalTokens
                         )
                         emitCompressionHandled(summaryMessage.content)
+                        saveSummaryUseCase(summaryMessage.content)
                     }
                     .onFailure { error ->
                         emitError(error.message ?: "Unable to compress conversation")

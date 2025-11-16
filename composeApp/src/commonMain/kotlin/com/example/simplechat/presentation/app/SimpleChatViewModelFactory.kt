@@ -5,6 +5,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.simplechat.core.di.AppGraph
 import com.example.simplechat.presentation.apikey.ApiKeyViewModel
 import com.example.simplechat.presentation.chat.ChatViewModel
+import com.example.simplechat.presentation.history.HistoryViewModel
 import com.example.simplechat.presentation.settings.SettingsViewModel
 
 object SimpleChatViewModelFactory {
@@ -22,7 +23,10 @@ object SimpleChatViewModelFactory {
 
     fun chatViewModelFactory() = viewModelFactory {
         initializer {
-            ChatViewModel(AppGraph.sendPromptUseCase)
+            ChatViewModel(
+                sendPromptUseCase = AppGraph.sendPromptUseCase,
+                saveSummaryUseCase = AppGraph.saveSummaryUseCase
+            )
         }
     }
 
@@ -33,6 +37,15 @@ object SimpleChatViewModelFactory {
                 saveAssistantSettingsUseCase = AppGraph.saveAssistantSettingsUseCase,
                 observeApiCredentialsUseCase = AppGraph.observeApiCredentialsUseCase,
                 saveApiCredentialsUseCase = AppGraph.saveApiCredentialsUseCase
+            )
+        }
+    }
+
+    fun historyViewModelFactory() = viewModelFactory {
+        initializer {
+            HistoryViewModel(
+                observeSummaryHistoryUseCase = AppGraph.observeSummaryHistoryUseCase,
+                clearSummaryHistoryUseCase = AppGraph.clearSummaryHistoryUseCase
             )
         }
     }
