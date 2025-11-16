@@ -44,7 +44,8 @@ object SimpleChatViewModelFactory {
     fun historyViewModelFactory() = viewModelFactory {
         initializer {
             HistoryViewModel(
-                observeSummaryHistoryUseCase = AppGraph.observeSummaryHistoryUseCase
+                observeSummaryHistoryUseCase = AppGraph.observeSummaryHistoryUseCase,
+                clearSummaryHistoryUseCase = AppGraph.clearSummaryHistoryUseCase
             )
         }
     }

@@ -6,4 +6,5 @@ import kotlinx.coroutines.flow.Flow
 interface SummaryHistoryRepository {
     suspend fun saveSummary(summary: String)
     fun observeSummaryHistory(): Flow<List<ConversationSummary>>
+    suspend fun clearHistory()
 }

@@ -11,6 +11,7 @@ import com.example.simplechat.data.repository.SummaryHistoryRepositoryImpl
 import com.example.simplechat.domain.repository.ChatRepository
 import com.example.simplechat.domain.repository.SettingsRepository
 import com.example.simplechat.domain.repository.SummaryHistoryRepository
+import com.example.simplechat.domain.usecase.ClearSummaryHistoryUseCase
 import com.example.simplechat.domain.usecase.ObserveApiCredentialsUseCase
 import com.example.simplechat.domain.usecase.ObserveAssistantSettingsUseCase
 import com.example.simplechat.domain.usecase.ObserveSummaryHistoryUseCase
@@ -48,6 +49,7 @@ object AppGraph {
     val saveAssistantSettingsUseCase: SaveAssistantSettingsUseCase by lazy { SaveAssistantSettingsUseCase(settingsRepository) }
     val observeSummaryHistoryUseCase: ObserveSummaryHistoryUseCase by lazy { ObserveSummaryHistoryUseCase(summaryHistoryRepository) }
     val saveSummaryUseCase: SaveSummaryUseCase by lazy { SaveSummaryUseCase(summaryHistoryRepository) }
+    val clearSummaryHistoryUseCase: ClearSummaryHistoryUseCase by lazy { ClearSummaryHistoryUseCase(summaryHistoryRepository) }
     val sendPromptUseCase: SendPromptUseCase by lazy { SendPromptUseCase(chatRepository, settingsRepository) }
 
     fun initialize(platformConfiguration: PlatformConfiguration) {

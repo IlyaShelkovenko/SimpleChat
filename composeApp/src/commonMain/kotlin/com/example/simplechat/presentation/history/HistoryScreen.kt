@@ -18,6 +18,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -40,13 +41,18 @@ fun HistoryRoute(
     viewModel: HistoryViewModel = viewModel(factory = SimpleChatViewModelFactory.historyViewModelFactory())
 ) {
     val state by viewModel.uiState.collectAsState()
-    HistoryScreen(state = state, onBack = onBack)
+    HistoryScreen(
+        state = state,
+        onBack = onBack,
+        onClearHistory = viewModel::clearHistory
+    )
 }
 
 @Composable
 fun HistoryScreen(
     state: HistoryUiState,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onClearHistory: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -58,6 +64,13 @@ fun HistoryScreen(
                             imageVector = Icons.Outlined.ArrowBack,
                             contentDescription = "Back"
                         )
+                    }
+                },
+                actions = {
+                    if (state.summaries.isNotEmpty()) {
+                        TextButton(onClick = onClearHistory) {
+                            Text("Clear")
+                        }
                     }
                 }
             )
