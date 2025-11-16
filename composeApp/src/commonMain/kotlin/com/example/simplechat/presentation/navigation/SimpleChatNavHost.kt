@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.simplechat.presentation.apikey.ApiKeyRoute
 import com.example.simplechat.presentation.chat.ChatRoute
+import com.example.simplechat.presentation.history.HistoryRoute
 import com.example.simplechat.presentation.settings.SettingsRoute
 
 @Composable
@@ -35,11 +36,19 @@ fun SimpleChatNavHost(
             ChatRoute(
                 onOpenSettings = {
                     navController.navigate(SimpleChatDestination.Settings)
+                },
+                onOpenHistory = {
+                    navController.navigate(SimpleChatDestination.History)
                 }
             )
         }
         composable(SimpleChatDestination.Settings) {
             SettingsRoute(
+                onBack = { navController.popBackStack() }
+            )
+        }
+        composable(SimpleChatDestination.History) {
+            HistoryRoute(
                 onBack = { navController.popBackStack() }
             )
         }

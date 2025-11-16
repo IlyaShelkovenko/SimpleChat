@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Settings
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.simplechat.presentation.app.SimpleChatViewModelFactory
@@ -50,6 +51,7 @@ import com.example.simplechat.presentation.components.ChatMessageBubble
 @Composable
 fun ChatRoute(
     onOpenSettings: () -> Unit,
+    onOpenHistory: () -> Unit,
     viewModel: ChatViewModel = viewModel(factory = SimpleChatViewModelFactory.chatViewModelFactory())
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -86,6 +88,7 @@ fun ChatRoute(
             onSubmitPrompt = { viewModel.onEvent(ChatEvent.SubmitPrompt) },
             onClearChat = { viewModel.onEvent(ChatEvent.ClearChat) },
             onOpenSettings = onOpenSettings,
+            onOpenHistory = onOpenHistory,
             contentPadding = padding
         )
     }
@@ -98,6 +101,7 @@ fun ChatScreen(
     onSubmitPrompt: () -> Unit,
     onClearChat: () -> Unit,
     onOpenSettings: () -> Unit,
+    onOpenHistory: () -> Unit,
     contentPadding: PaddingValues = PaddingValues()
 ) {
     Box(
@@ -132,12 +136,24 @@ fun ChatScreen(
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.onBackground
                     )
-                    IconButton(onClick = onOpenSettings) {
-                        Icon(
-                            imageVector = Icons.Outlined.Settings,
-                            contentDescription = "Open settings",
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(onClick = onOpenHistory) {
+                            Icon(
+                                imageVector = Icons.Outlined.History,
+                                contentDescription = "Open history",
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                        IconButton(onClick = onOpenSettings) {
+                            Icon(
+                                imageVector = Icons.Outlined.Settings,
+                                contentDescription = "Open settings",
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
                     }
                 }
                 Text(
